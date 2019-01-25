@@ -37,7 +37,16 @@ def alignment_graph_save_dot(graph, outdir, outfile):
         f.write("}\n")
 
 
-def breakpoint_graph_save_dot(graph, outdir):
+def breakpoint_graph_save_dot(graph, max_matching, outdir):
+    def get_edge_color(node_from, node_to):
+        if (node_from, node_to) in max_matching:
+            return "green"
+
+        if (node_to, node_from) in max_matching:
+            return "green"
+
+        return "black"
+
     with open("{}/{}.gv".format(outdir, "breakpoint_graph"), "w") as f:
         f.write("graph {\n")
         f.write("  edge [penwidth=5]\n")
@@ -46,7 +55,9 @@ def breakpoint_graph_save_dot(graph, outdir):
             f.write("  {} [label=\"{}\"]\n".format(node, data["label"]))
 
         for (node_from, node_to) in graph.edges():
-            f.write("  {} -- {}\n".format(node_from, node_to))
+            color = get_edge_color(node_from, node_to)
+            f.write("  {} -- {} [color={}]\n".format(
+                node_from, node_to, color))
 
         f.write("}\n")
 

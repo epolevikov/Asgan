@@ -10,6 +10,8 @@ import asgan.alignment_blocks_processing as ab_proc
 import asgan.alignment_graph_processing as aln_gr_proc
 import asgan.breakpoint_graph_processing as bp_gr_proc
 
+import networkx as nx
+
 
 def get_args():
     parser = argparse.ArgumentParser()
@@ -70,7 +72,23 @@ def main():
     breakpoint_graph = bp_gr_proc.build_breakpoint_graph(
         alignment_graph_query, alignment_graph_target, num_aln_blocks)
 
-    out_gen.breakpoint_graph_save_dot(breakpoint_graph, args.out_dir)
+    max_matching = nx.max_weight_matching(breakpoint_graph)
+    out_gen.breakpoint_graph_save_dot(breakpoint_graph, max_matching,
+                                      args.out_dir)
+
+    paths = bp_gr_proc.reconstruct_paths(breakpoint_graph, max_matching)
+
+    with open("{}/paths.txt".format(args.out_dir), "w") as f:
+        f.write("graph {\n")
+        f.write("  edge [penwidth=5]\n")
+
+        for node, data in paths.nodes(data=True):
+            f.write("  {} [label=\"{}\"]\n".format(node, data["label"]))
+
+        for (node_from, node_to) in paths.edges():
+            f.write("  {} -- {} \n".format(node_from, node_to))
+
+        f.write("}\n")
 
 
 if __name__ == "__main__":
