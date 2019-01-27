@@ -4,11 +4,16 @@ def output_blocks_info(out_dir, aln_blocks_query, aln_blocks_target):
     def _output_blocks_info(file, aln_blocks):
         for seq, blocks in aln_blocks.items():
             blocks.sort(key=lambda block: block.start)
+            '''
             for block in blocks:
                 f.write(block.signed_id() + " ")
-            f.write("| seq={} len={}\n".format(
+            '''
+            f.write("seq={} len={}\n".format(
                     blocks[0].seq_name,
                     pretty_number(blocks[0].seq_length)))
+            for block in blocks:
+                f.write(str(block) + "\n")
+            f.write("\n")
 
     with open("{}/alignment_blocks.txt".format(out_dir), "w") as f:
         f.write("Query blocks:\n")
@@ -58,6 +63,20 @@ def breakpoint_graph_save_dot(graph, max_matching, outdir):
             color = get_edge_color(node_from, node_to)
             f.write("  {} -- {} [color={}]\n".format(
                 node_from, node_to, color))
+
+        f.write("}\n")
+
+
+def paths_save_dot(paths, out_dir):
+    with open("{}/paths.gv".format(out_dir), "w") as f:
+        f.write("graph {\n")
+        f.write("  edge [penwidth=5]\n")
+
+        for node, data in paths.nodes(data=True):
+            f.write("  {} [label=\"{}\"]\n".format(node, data["label"]))
+
+        for (node_from, node_to) in paths.edges():
+            f.write("  {} -- {} \n".format(node_from, node_to))
 
         f.write("}\n")
 

@@ -1,3 +1,4 @@
+from asgan.output_generator import pretty_number
 
 
 class AlignmentBlock:
@@ -18,9 +19,9 @@ class AlignmentBlock:
         return self.seq_length - self.end
 
     def __str__(self):
-        return "{}\t{}\t{}\t{}\t{}".format(self.id, self.seq_name,
-                                           self.seq_length,
-                                           self.start, self.end)
+        return "{}\t{}\t{}".format(self.signed_id(),
+                                   pretty_number(self.start),
+                                   pretty_number(self.end))
 
 
 def extract_alignment_blocks(hits):

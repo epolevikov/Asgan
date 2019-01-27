@@ -89,23 +89,24 @@ def _unite_processed_hits(processed_hits):
     united_hits = []
     curr_hit = processed_hits[0]
     i = 1
+    max_hits_dist = 5 * 10**4
 
     while i < len(processed_hits):
         next_hit = processed_hits[i]
 
         query_hits_dist = next_hit.query_start - curr_hit.query_end
         target_hits_dist = next_hit.target_start - curr_hit.target_end
-        dist_diff = abs(query_hits_dist - target_hits_dist)
 
         if curr_hit.query_name != next_hit.query_name \
            or curr_hit.target_name != next_hit.target_name \
-           or query_hits_dist < 0 or target_hits_dist < 0 \
-           or dist_diff > 1000:
+           or query_hits_dist > max_hits_dist \
+           or target_hits_dist > max_hits_dist:
             united_hits.append(curr_hit)
             curr_hit = processed_hits[i]
         else:
             curr_hit.query_end = next_hit.query_end
             curr_hit.target_end = next_hit.target_end
+
         i += 1
 
     united_hits.append(curr_hit)

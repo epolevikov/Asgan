@@ -5,6 +5,7 @@ import asgan.aligner as aligner
 import asgan.gfa_parser as gfa_parser
 import asgan.output_generator as out_gen
 import asgan.hits_processing as hits_proc
+import asgan.paths_processing as paths_proc
 import asgan.assembly_graph_processing as agr_proc
 import asgan.alignment_blocks_processing as ab_proc
 import asgan.alignment_graph_processing as aln_gr_proc
@@ -76,19 +77,8 @@ def main():
     out_gen.breakpoint_graph_save_dot(breakpoint_graph, max_matching,
                                       args.out_dir)
 
-    paths = bp_gr_proc.reconstruct_paths(breakpoint_graph, max_matching)
-
-    with open("{}/paths.txt".format(args.out_dir), "w") as f:
-        f.write("graph {\n")
-        f.write("  edge [penwidth=5]\n")
-
-        for node, data in paths.nodes(data=True):
-            f.write("  {} [label=\"{}\"]\n".format(node, data["label"]))
-
-        for (node_from, node_to) in paths.edges():
-            f.write("  {} -- {} \n".format(node_from, node_to))
-
-        f.write("}\n")
+    paths = paths_proc.reconstruct_paths(breakpoint_graph, max_matching)
+    out_gen.paths_save_dot(paths, args.out_dir)
 
 
 if __name__ == "__main__":
