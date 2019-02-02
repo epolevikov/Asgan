@@ -62,6 +62,21 @@ def build_breakpoint_graph(graph_query, graph_target, num_aln_blocks):
     return breakpoint_graph
 
 
+def get_unused_edges(breakpoint_graph, max_matching):
+    unused_edges = []
+
+    for (node_from, node_to) in breakpoint_graph.edges():
+        if (node_from, node_to) in max_matching:
+            continue
+
+        if (node_to, node_from) in max_matching:
+            continue
+
+        unused_edges.append((node_from, node_to))
+
+    return unused_edges
+
+
 def _build_block2edge_dict(graph):
     block2edge = dict()
     for (node_from, node_to, data) in graph.edges(data=True):

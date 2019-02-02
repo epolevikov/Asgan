@@ -31,9 +31,11 @@ def parse_gfa(gfa_file):
                 sequences.append(_parse_sequence(record))
 
             if record_type == RecordType.LINK:
-                links.append(_parse_link(record))
+                link = _parse_link(record)
+                links.append(link)
+                links.append(_inv_link(link))
 
-    return sequences, links
+    return sequences, list(set(links))
 
 
 def _parse_sequence(record):
@@ -44,4 +46,16 @@ def _parse_sequence(record):
 
 def _parse_link(record):
     from_name, from_strand, to_name, to_strand = record[1:5]
+    return Link(from_name, from_strand, to_name, to_strand)
+
+
+def _inv_link(link):
+    def inv_strand(strand):
+        return ["+", "-"][strand == "+"]
+
+    from_name = link.to_name
+    from_strand = inv_strand(link.to_strand)
+    to_name = link.from_name
+    to_strand = inv_strand(link.from_strand)
+
     return Link(from_name, from_strand, to_name, to_strand)

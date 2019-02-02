@@ -91,7 +91,8 @@ def remove_components_without_alignment_blocks(assembly_graph,
         return False
 
     components_with_alignment_blocks = nx.MultiDiGraph()
-    for wcc in nx.weakly_connected_component_subgraphs(assembly_graph):
+    for wcc in nx.weakly_connected_component_subgraphs(assembly_graph,
+                                                       copy=False):
         if check_component(wcc):
             components_with_alignment_blocks = \
                 nx.union(components_with_alignment_blocks, wcc)

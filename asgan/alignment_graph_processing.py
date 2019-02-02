@@ -9,8 +9,8 @@ def build_alignment_graph(assembly_graph, alignment_blocks):
         edge_blocks = alignment_blocks.get(data["name"])
 
         if edge_blocks is None:
-            if node_from != node_to:
-                alignment_graph.add_edge(node_from, node_to, **data)
+            # if node_from != node_to:
+            alignment_graph.add_edge(node_from, node_to, **data)
             continue
 
         if len(edge_blocks) == 1:

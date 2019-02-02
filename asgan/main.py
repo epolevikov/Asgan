@@ -60,25 +60,38 @@ def main():
     assembly_graph_target = parse_assembly_graph(
         args.graph_target, aln_blocks_target)
 
+    out_gen.assembly_graph_save_dot(assembly_graph_query, args.out_dir,
+                                    "assembly_graph_query")
+    out_gen.assembly_graph_save_dot(assembly_graph_target, args.out_dir,
+                                    "assembly_graph_target")
+
     alignment_graph_query = aln_gr_proc.build_alignment_graph(
         assembly_graph_query, aln_blocks_query)
     alignment_graph_target = aln_gr_proc.build_alignment_graph(
         assembly_graph_target, aln_blocks_target)
 
-    out_gen.alignment_graph_save_dot(alignment_graph_query, args.out_dir,
-                                     "alignment_graph_query")
-    out_gen.alignment_graph_save_dot(alignment_graph_target, args.out_dir,
-                                     "alignment_graph_target")
+    out_gen.alignment_graphs_save_dot(alignment_graph_query,
+                                      alignment_graph_target,
+                                      args.out_dir, "alignment_graphs.gv")
+
+    # out_gen.alignment_graph_save_dot(alignment_graph_query, args.out_dir,
+    #                                 "alignment_graph_query")
+    # out_gen.alignment_graph_save_dot(alignment_graph_target, args.out_dir,
+    #                                 "alignment_graph_target")
 
     breakpoint_graph = bp_gr_proc.build_breakpoint_graph(
         alignment_graph_query, alignment_graph_target, num_aln_blocks)
 
-    max_matching = nx.max_weight_matching(breakpoint_graph)
+    max_matching = nx.maximal_matching(breakpoint_graph)
     out_gen.breakpoint_graph_save_dot(breakpoint_graph, max_matching,
                                       args.out_dir)
 
-    paths = paths_proc.reconstruct_paths(breakpoint_graph, max_matching)
-    out_gen.paths_save_dot(paths, args.out_dir)
+    paths_graph, paths = paths_proc.reconstruct_paths(breakpoint_graph,
+                                                      max_matching)
+    unused_edges = bp_gr_proc.get_unused_edges(breakpoint_graph, max_matching)
+    out_gen.paths_graph_save_dot(paths_graph, unused_edges, args.out_dir)
+
+    paths.sort(key=len, reverse=True)
 
 
 if __name__ == "__main__":

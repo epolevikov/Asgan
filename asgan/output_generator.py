@@ -22,22 +22,52 @@ def output_blocks_info(out_dir, aln_blocks_query, aln_blocks_target):
         _output_blocks_info(f, aln_blocks_target)
 
 
-def alignment_graph_save_dot(graph, outdir, outfile):
-    def get_edge_color(edge_name):
-        if edge_name.startswith("+") or edge_name.startswith("-"):
-            return "green"
-
-        return "black"
-
+def assembly_graph_save_dot(graph, outdir, outfile):
     with open("{}/{}.gv".format(outdir, outfile), "w") as f:
         f.write("digraph {\n")
         f.write("  node [shape=point]\n")
         f.write("  edge [penwidth=5]\n")
 
         for (node_from, node_to, data) in graph.edges(data=True):
-            f.write("  {} -> {} [label=\"{}\", color={}]\n".format(
-                node_from, node_to, data["name"],
-                get_edge_color(data["name"])))
+            f.write("  {} -> {} [label=\"{}\"]\n".format(
+                node_from, node_to, data["name"]))
+
+        f.write("}\n")
+
+
+def alignment_graph_save_dot(graph, label, prefix, file):
+    def get_edge_color(edge_name):
+        if edge_name.startswith("+") or edge_name.startswith("-"):
+            return "green"
+
+        return "black"
+
+    def get_edge_label(edge_name):
+        if edge_name.startswith("+") or edge_name.startswith("-"):
+            return edge_name
+
+        return edge_name
+
+    file.write("  subgraph cluster_{} ".format(prefix) + " {\n")
+
+    for (node_from, node_to, data) in graph.edges(data=True):
+        edge_color = get_edge_color(data["name"])
+        edge_label = get_edge_label(data["name"])
+        file.write("    {0}{1} -> {0}{2} [label=\"{3}\", color={4}]\n".format(
+            prefix, node_from, node_to, edge_label, edge_color))
+
+    file.write("    label={}\n".format(label))
+    file.write("  }\n")
+
+
+def alignment_graphs_save_dot(graph_query, graph_target, outdir, outfile):
+    with open("{}/{}".format(outdir, outfile), "w") as f:
+        f.write("digraph {\n")
+        f.write("  node [shape=point]\n")
+        f.write("  edge [penwidth=5]\n")
+
+        alignment_graph_save_dot(graph_query, "query", "qry", f)
+        alignment_graph_save_dot(graph_target, "target", "trg", f)
 
         f.write("}\n")
 
@@ -67,18 +97,28 @@ def breakpoint_graph_save_dot(graph, max_matching, outdir):
         f.write("}\n")
 
 
-def paths_save_dot(paths, out_dir):
-    with open("{}/paths.gv".format(out_dir), "w") as f:
-        f.write("graph {\n")
-        f.write("  edge [penwidth=5]\n")
+def paths_graph_save_dot(paths, unused_edges, out_dir):
+    def save(filename, with_unused_edges=False):
+        with open("{}/{}.gv".format(out_dir, filename), "w") as f:
+            f.write("graph {\n")
+            f.write("  edge [penwidth=5]\n")
 
-        for node, data in paths.nodes(data=True):
-            f.write("  {} [label=\"{}\"]\n".format(node, data["label"]))
+            for node, data in paths.nodes(data=True):
+                f.write("  {} [label=\"{}\"]\n".format(node, data["label"]))
 
-        for (node_from, node_to) in paths.edges():
-            f.write("  {} -- {} \n".format(node_from, node_to))
+            for (node_from, node_to) in paths.edges():
+                f.write("  {} -- {} [color=green] \n".format(
+                    node_from, node_to))
 
-        f.write("}\n")
+            if with_unused_edges:
+                for (node_from, node_to) in unused_edges:
+                    f.write("  {} -- {} [style=dashed]\n".format(
+                        node_from, node_to))
+
+            f.write("}\n")
+
+    save("paths")
+    save("paths_with_unused_edges", with_unused_edges=True)
 
 
 def pretty_number(number):
