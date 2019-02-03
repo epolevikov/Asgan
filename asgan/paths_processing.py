@@ -63,7 +63,7 @@ def reconstruct_paths(breakpoint_graph, max_matching):
             node_label = ["+", "-"][node_label[-1] == "h"] + node_label[:-1]
             labeled_path.append(node_label)
 
-        labeled_paths.append(labeled_path)
-        labeled_paths.append(_complement_path(labeled_path))
+        complement_labeled_path = _complement_path(labeled_path)
+        labeled_paths.append([labeled_path, complement_labeled_path])
 
     return paths_graph, labeled_paths

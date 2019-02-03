@@ -50,3 +50,31 @@ def group_by_sequence(alignment_blocks):
         grouped_aln_blocks[alignment_block.seq_name].append(alignment_block)
 
     return grouped_aln_blocks
+
+
+def set_block_colors(paths):
+    colors = ["green", "blue", "gold", "red", "purple"]
+    block_colors = dict()
+    i = 0
+
+    paths.sort(key=lambda pair: len(pair[0]), reverse=True)
+
+    while i < len(colors) and i < len(paths):
+        for block in paths[i][0]:
+            block_colors[block] = colors[i]
+
+        for block in paths[i][1]:
+            block_colors[block] = colors[i] + "3"
+
+        i += 1
+
+    while i < len(paths):
+        for block in paths[i][0]:
+            block_colors[block] = "gray"
+
+        for block in paths[i][1]:
+            block_colors[block] = "gray"
+
+        i += 1
+
+    return block_colors

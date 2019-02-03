@@ -1,6 +1,7 @@
 import os
 import argparse
 
+import asgan.stats as st
 import asgan.aligner as aligner
 import asgan.gfa_parser as gfa_parser
 import asgan.output_generator as out_gen
@@ -70,10 +71,6 @@ def main():
     alignment_graph_target = aln_gr_proc.build_alignment_graph(
         assembly_graph_target, aln_blocks_target)
 
-    out_gen.alignment_graphs_save_dot(alignment_graph_query,
-                                      alignment_graph_target,
-                                      args.out_dir, "alignment_graphs.gv")
-
     # out_gen.alignment_graph_save_dot(alignment_graph_query, args.out_dir,
     #                                 "alignment_graph_query")
     # out_gen.alignment_graph_save_dot(alignment_graph_target, args.out_dir,
@@ -91,7 +88,19 @@ def main():
     unused_edges = bp_gr_proc.get_unused_edges(breakpoint_graph, max_matching)
     out_gen.paths_graph_save_dot(paths_graph, unused_edges, args.out_dir)
 
-    paths.sort(key=len, reverse=True)
+    block_colors = ab_proc.set_block_colors(paths)
+
+    out_gen.alignment_graph_save_dot(alignment_graph_query, block_colors,
+                                     args.out_dir, "alignment_graph_query")
+    out_gen.alignment_graph_save_dot(alignment_graph_target, block_colors,
+                                     args.out_dir, "alignment_graph_target")
+
+    stats = st.get_stats(assembly_graph_query, assembly_graph_target, paths)
+    out_gen.output_stats(stats, args.out_dir)
+
+    # out_gen.alignment_graphs_save_dot(alignment_graph_query,
+    #                                  alignment_graph_target, block_colors,
+    #                                  args.out_dir, "alignment_graphs.gv")
 
 
 if __name__ == "__main__":
