@@ -1,37 +1,6 @@
 import networkx as nx
 
 
-def _build_paths_graph(breakpoint_graph, max_matching):
-    paths_graph = nx.Graph()
-
-    for node, data in breakpoint_graph.nodes(data=True):
-        paths_graph.add_node(node, **data)
-
-    for (node_from, node_to) in max_matching:
-        paths_graph.add_edge(node_from, node_to)
-
-    for node_from, data_from in breakpoint_graph.nodes(data=True):
-        for node_to, data_to in breakpoint_graph.nodes(data=True):
-            if node_from == node_to:
-                continue
-
-            label_from, label_to = data_from["label"], data_to["label"]
-            if label_from[:-1] == label_to[:-1]:
-                paths_graph.add_edge(node_from, node_to)
-
-    return paths_graph
-
-
-def _complement_path(path):
-    comp_path = []
-
-    for label in reversed(path):
-        comp_label = ["+", "-"][label[0] == "+"] + label[1:]
-        comp_path.append(comp_label)
-
-    return comp_path
-
-
 def reconstruct_paths(breakpoint_graph, max_matching):
     paths_graph = _build_paths_graph(breakpoint_graph, max_matching)
     paths = []
@@ -67,3 +36,34 @@ def reconstruct_paths(breakpoint_graph, max_matching):
         labeled_paths.append([labeled_path, complement_labeled_path])
 
     return paths_graph, labeled_paths
+
+
+def _build_paths_graph(breakpoint_graph, max_matching):
+    paths_graph = nx.Graph()
+
+    for node, data in breakpoint_graph.nodes(data=True):
+        paths_graph.add_node(node, **data)
+
+    for (node_from, node_to) in max_matching:
+        paths_graph.add_edge(node_from, node_to)
+
+    for node_from, data_from in breakpoint_graph.nodes(data=True):
+        for node_to, data_to in breakpoint_graph.nodes(data=True):
+            if node_from == node_to:
+                continue
+
+            label_from, label_to = data_from["label"], data_to["label"]
+            if label_from[:-1] == label_to[:-1]:
+                paths_graph.add_edge(node_from, node_to)
+
+    return paths_graph
+
+
+def _complement_path(path):
+    comp_path = []
+
+    for label in reversed(path):
+        comp_label = ["+", "-"][label[0] == "+"] + label[1:]
+        comp_path.append(comp_label)
+
+    return comp_path

@@ -90,10 +90,10 @@ def alignment_graph_save_dot(graph, block_colors, outdir, outfile):
 
     with open("{}/{}.gv".format(outdir, outfile), "w") as f:
         f.write("digraph {\n")
-        f.write("  node [shape=point]\n")
-        f.write("  edge [penwidth=5]\n")
-        f.write("  graph[center=true, margin=0.2,")
-        f.write("nodesep=0.35, ranksep=0.35]\n")
+        f.write("  node [shape=point, width=0.06]\n")
+        f.write("  edge [penwidth=7]\n")
+        f.write("  graph[center=true, margin=0.5, ")
+        f.write("nodesep=0.45, ranksep=0.35]\n")
 
         for (node_from, node_to, data) in graph.edges(data=True):
             edge_color = get_edge_color(data["name"])
@@ -155,11 +155,15 @@ def paths_graph_save_dot(paths, unused_edges, out_dir):
 
 def output_stats(stats, outdir):
     with open("{}/stats.txt".format(outdir), "w") as f:
-        f.write("# query wcc: {}\n".format(stats.query_num_wcc))
-        f.write("# query contigs: {}\n\n".format(stats.query_num_contigs))
-        f.write("# target wcc: {}\n".format(stats.target_num_wcc))
-        f.write("# target contigs: {}\n\n".format(stats.target_num_contigs))
-        f.write("# paths: {}\n".format(2 * len(stats.paths)))
+        f.write("\twcc\tcontigs\tpaths\tpaths cov.\n")
+        f.write("Query\t{}\t{}\t{}\t{}\n".format(stats.query_num_wcc,
+                                                 stats.query_num_contigs,
+                                                 2 * len(stats.paths),
+                                                 stats.query_paths_coverage))
+        f.write("Target\t{}\t{}\t{}\t{}\n".format(stats.target_num_wcc,
+                                                  stats.target_num_contigs,
+                                                  2 * len(stats.paths),
+                                                  stats.target_paths_coverage))
 
 
 def pretty_number(number):

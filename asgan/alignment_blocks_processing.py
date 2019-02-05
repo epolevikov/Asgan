@@ -18,6 +18,9 @@ class AlignmentBlock:
     def end_gap_length(self):
         return self.seq_length - self.end
 
+    def length(self):
+        return self.end - self.start + 1
+
     def __str__(self):
         return "{}\t{}\t{}".format(self.signed_id(),
                                    pretty_number(self.start),
@@ -53,7 +56,8 @@ def group_by_sequence(alignment_blocks):
 
 
 def set_block_colors(paths):
-    colors = ["green", "blue", "gold", "red", "purple"]
+    colors = ["green", "blue", "gold", "red", "purple", "darkorange",
+              "hotpink", "khaki", "lightblue", "thistle", "tan"]
     block_colors = dict()
     i = 0
 
