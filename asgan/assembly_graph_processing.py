@@ -1,4 +1,5 @@
 import networkx as nx
+from asgan.utils import DisjointSet
 
 
 class Sequence:
@@ -7,6 +8,7 @@ class Sequence:
         self.length = length
 
 
+'''
 class Edge:
     def __init__(self, name, length, node_from, node_to):
         self.name = name
@@ -17,6 +19,7 @@ class Edge:
     def __str__(self):
         return "name={}, length={}, node_from={}, node_to={}".format(
             self.name, self.length, self.node_from, self.node_to)
+'''
 
 
 def build_assembly_graph(raw_sequences, links):
@@ -33,13 +36,65 @@ def build_assembly_graph(raw_sequences, links):
 
         curr_id += 2
 
-    n_vertices = len(sequences)
-    digraph = [[] for _ in range(n_vertices)]
+    disjoint_set = DisjointSet(2 * len(sequences))
 
     for link in links:
         id_from = sequence2id[link.from_name + link.from_strand]
         id_to = sequence2id[link.to_name + link.to_strand]
-        digraph[id_from].append(id_to)
+        disjoint_set.union(2 * id_from + 1, 2 * id_to)
+
+    assembly_graph = nx.MultiDiGraph()
+    assembly_graph.add_nodes_from(disjoint_set.get_unique_parents())
+
+    for i, seq in enumerate(sequences):
+        node_from = disjoint_set.find(2 * i)
+        node_to = disjoint_set.find(2 * i + 1)
+        assembly_graph.add_edge(node_from, node_to,
+                                name=seq.name,
+                                length=seq.length)
+
+    return assembly_graph
+
+    '''
+    assembly_graph = nx.MultiDiGraph()
+
+    for v in range(len(digraph)):
+        is_self_loop = (v in digraph[v])
+        assembly_graph.add_edge(2 * v, 2 * v + 1,
+                                name="{}".format(sequences[v].name),
+                                self_loop=is_self_loop)
+
+    for v, neighbour in enumerate(digraph):
+        for u in neighbour:
+            if v != u:
+                assembly_graph.add_edge(2 * v + 1, 2 * u,
+                                        name="dummy",
+                                        key="dummy")
+
+    has_dummy_edges = True
+    while has_dummy_edges:
+        has_dummy_edges = False
+        for (node_from, node_to, data) in assembly_graph.edges(data=True):
+            if data["name"] == "dummy":
+                if assembly_graph.number_of_edges(node_from, node_to) > 1:
+                    assembly_graph.remove_edge(node_from, node_to,
+                                               key="dummy")
+                else:
+                    assembly_graph = nx.contracted_edge(assembly_graph,
+                                                        (node_from, node_to),
+                                                        self_loops=False)
+                has_dummy_edges = True
+                break
+
+    has_self_loops = True
+    while has_self_loops:
+        has_self_loops = False
+        for (node_from, node_to, data) in assembly_graph.edges(data=True):
+            if node_from != node_to and data["self_loop"]:
+                assembly_graph = nx.contracted_edge(assembly_graph,
+                                                    (node_from, node_to))
+                has_self_loops = True
+                break
 
     edges = build_edge_graph(digraph, sequences)
 
@@ -49,8 +104,10 @@ def build_assembly_graph(raw_sequences, links):
                                 name=edge.name, length=edge.length)
 
     return assembly_graph
+    '''
 
 
+'''
 def build_edge_graph(digraph, sequences):
     def unite_nodes(i, j):
         nodes_union = nodes[i].union(nodes[j])
@@ -79,6 +136,7 @@ def build_edge_graph(digraph, sequences):
         edge.node_to = nodes[edge.node_to]
 
     return edges
+'''
 
 
 def remove_components_without_alignment_blocks(assembly_graph,

@@ -26,7 +26,7 @@ def assembly_graph_save_dot(graph, outdir, outfile):
     with open("{}/{}.gv".format(outdir, outfile), "w") as f:
         f.write("digraph {\n")
         f.write("  node [shape=point]\n")
-        f.write("  edge [penwidth=5]\n")
+        f.write("  edge [penwidth=5, color=green, fontsize=20]\n")
 
         for (node_from, node_to, data) in graph.edges(data=True):
             f.write("  {} -> {} [label=\"{}\"]\n".format(
@@ -77,10 +77,15 @@ def alignment_graphs_save_dot(graph_query, graph_target, block_colors, outdir,
 '''
 
 
-def alignment_graph_save_dot(graph, block_colors, outdir, outfile):
+def alignment_graph_save_dot(graph, outdir, outfile, block_colors,
+                             block_styles):
     def get_edge_color(edge_name):
         edge_color = block_colors.get(edge_name)
-        return [edge_color, "black"][edge_color is None]
+
+        if edge_color is not None:
+            return edge_color
+
+        return "black"
 
     def get_edge_label(edge_name):
         if edge_name.startswith("+") or edge_name.startswith("-"):
@@ -88,18 +93,32 @@ def alignment_graph_save_dot(graph, block_colors, outdir, outfile):
 
         return ""
 
+    def get_edge_style(edge_name):
+        edge_style = block_styles.get(edge_name)
+
+        if edge_style is not None:
+            return edge_style
+
+        return "solid"
+
     with open("{}/{}.gv".format(outdir, outfile), "w") as f:
         f.write("digraph {\n")
         f.write("  node [shape=point, width=0.06]\n")
-        f.write("  edge [penwidth=7]\n")
+        f.write("  edge [fontsize=20]\n")
         f.write("  graph[center=true, margin=0.5, ")
         f.write("nodesep=0.45, ranksep=0.35]\n")
 
         for (node_from, node_to, data) in graph.edges(data=True):
             edge_color = get_edge_color(data["name"])
             edge_label = get_edge_label(data["name"])
-            f.write("  {} -> {} [label=\"{}\", color={}]\n".format(
-                node_from, node_to, edge_label, edge_color))
+            edge_style = get_edge_style(data["name"])
+            edge_penwidth = 3 if edge_color == "black" else 6
+
+            f.write("  {} -> {} [".format(node_from, node_to))
+            f.write("label=\"{}\", ".format(edge_label))
+            f.write("color=\"{}\", ".format(edge_color))
+            f.write("style=\"{}\", ".format(edge_style))
+            f.write("penwidth=\"{}\"]\n".format(edge_penwidth))
 
         f.write("}\n")
 
@@ -117,6 +136,7 @@ def breakpoint_graph_save_dot(graph, max_matching, outdir):
     with open("{}/{}.gv".format(outdir, "breakpoint_graph"), "w") as f:
         f.write("graph {\n")
         f.write("  edge [penwidth=5]\n")
+        f.write("  node [fontsize=20]\n")
 
         for node, data in graph.nodes(data=True):
             f.write("  {} [label=\"{}\"]\n".format(node, data["label"]))
@@ -133,6 +153,7 @@ def paths_graph_save_dot(paths, unused_edges, out_dir):
     def save(filename, with_unused_edges=False):
         with open("{}/{}.gv".format(out_dir, filename), "w") as f:
             f.write("graph {\n")
+            f.write("  node [fontsize=20]\n")
             f.write("  edge [penwidth=5]\n")
 
             for node, data in paths.nodes(data=True):

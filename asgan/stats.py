@@ -16,8 +16,7 @@ class Stats:
         self.paths = paths
 
 
-def get_stats(graph_query, aln_blocks_query,
-              graph_target, aln_blocks_target,
+def get_stats(graph_query, aln_blocks_query, graph_target, aln_blocks_target,
               paths):
     query_num_wcc = nx.number_weakly_connected_components(graph_query)
     query_num_contigs = len(graph_query.edges())

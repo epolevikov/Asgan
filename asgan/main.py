@@ -27,7 +27,7 @@ def get_args():
 
 def align_contigs(args):
     raw_hits = aligner.align(args.contigs_query, args.contigs_target)
-    hits = hits_proc.process_raw_hits(raw_hits)
+    hits = hits_proc.process_raw_hits(raw_hits, args)
 
     aln_blocks_query, aln_blocks_target = \
         ab_proc.extract_alignment_blocks(hits)
@@ -57,6 +57,7 @@ def main():
                                aln_blocks_query,
                                aln_blocks_target)
 
+    print("2. Parsing assembly graphs")
     assembly_graph_query = parse_assembly_graph(
         args.graph_query, aln_blocks_query)
     assembly_graph_target = parse_assembly_graph(
@@ -67,22 +68,17 @@ def main():
     out_gen.assembly_graph_save_dot(assembly_graph_target, args.out_dir,
                                     "assembly_graph_target")
 
-    print("2. Building alignment graphs")
+    print("3. Building alignment graphs")
     alignment_graph_query = aln_gr_proc.build_alignment_graph(
         assembly_graph_query, aln_blocks_query)
     alignment_graph_target = aln_gr_proc.build_alignment_graph(
         assembly_graph_target, aln_blocks_target)
 
-    # out_gen.alignment_graph_save_dot(alignment_graph_query, args.out_dir,
-    #                                 "alignment_graph_query")
-    # out_gen.alignment_graph_save_dot(alignment_graph_target, args.out_dir,
-    #                                 "alignment_graph_target")
-
-    print("3. Finding shared paths")
+    print("4. Finding shared paths")
     breakpoint_graph = bp_gr_proc.build_breakpoint_graph(
         alignment_graph_query, alignment_graph_target, num_aln_blocks)
 
-    max_matching = nx.maximal_matching(breakpoint_graph)
+    max_matching = nx.max_weight_matching(breakpoint_graph)
     out_gen.breakpoint_graph_save_dot(breakpoint_graph, max_matching,
                                       args.out_dir)
 
@@ -91,14 +87,16 @@ def main():
     unused_edges = bp_gr_proc.get_unused_edges(breakpoint_graph, max_matching)
     out_gen.paths_graph_save_dot(paths_graph, unused_edges, args.out_dir)
 
-    block_colors = ab_proc.set_block_colors(paths)
+    block_colors, block_styles = ab_proc.set_block_attributes(paths)
 
-    out_gen.alignment_graph_save_dot(alignment_graph_query, block_colors,
-                                     args.out_dir, "alignment_graph_query")
-    out_gen.alignment_graph_save_dot(alignment_graph_target, block_colors,
-                                     args.out_dir, "alignment_graph_target")
+    out_gen.alignment_graph_save_dot(alignment_graph_query, args.out_dir,
+                                     "alignment_graph_query-1", block_colors,
+                                     block_styles)
+    out_gen.alignment_graph_save_dot(alignment_graph_target, args.out_dir,
+                                     "alignment_graph_target-1", block_colors,
+                                     block_styles)
 
-    print("4. Calculating stats")
+    print("5. Calculating stats")
     stats = st.get_stats(assembly_graph_query, aln_blocks_query,
                          assembly_graph_target, aln_blocks_target,
                          paths)

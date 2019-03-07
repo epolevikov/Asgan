@@ -1,4 +1,5 @@
 import os
+from asgan.output_generator import pretty_number
 
 
 class RawPafHit:
@@ -23,17 +24,26 @@ class RawPafHit:
     def target_hit_length(self):
         return self.target_end - self.target_start
 
+    def query_mapping_rate(self):
+        return self.query_hit_length() / self.query_len
+
+    def target_mapping_rate(self):
+        return self.target_hit_length() / self.target_len
+
     def __str__(self):
-        query_info = "{}\t{}\t{}\t{}\t".format(
-            self.query_name, self.query_len,
-            self.query_start, self.query_end)
+        query_info = "{}\t{}\t{}\t{}".format(
+            self.query_name,
+            pretty_number(self.query_len),
+            pretty_number(self.query_start),
+            pretty_number(self.query_end))
 
-        target_info = "\t{}\t{}\t{}\t{}".format(
-            self.target_name, self.target_len,
-            self.target_start, self.target_end)
+        target_info = "{}\t{}\t{}\t{}".format(
+            self.target_name,
+            pretty_number(self.target_len),
+            pretty_number(self.target_start),
+            pretty_number(self.target_end))
 
-        strand = self.strand
-        return query_info + strand + target_info
+        return "{}\t{}\t{}".format(query_info, self.strand, target_info)
 
 
 def align(contigs_query, contigs_target):
