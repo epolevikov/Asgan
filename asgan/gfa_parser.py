@@ -7,21 +7,7 @@ class RecordType:
 
 
 Link = namedtuple("Link", ["from_name", "from_strand", "to_name", "to_strand"])
-
-'''
-class Link:
-    def __init__(self, from_name, from_strand, to_name, to_strand):
-        self.from_name = from_name
-        self.from_strand = from_strand
-        self.to_name = to_name
-        self.to_strand = to_strand
-'''
-
-
-class Sequence:
-    def __init__(self, name, length):
-        self.name = name
-        self.length = length
+Sequence = namedtuple("Sequence", ["name", "length"])
 
 
 def parse_gfa(gfa_file):

@@ -13,6 +13,3 @@ class DisjointSet:
         i_id, j_id = self.find(i), self.find(j)
         if i_id != j_id:
             self.parents[j_id] = i_id
-
-    def get_unique_parents(self):
-        return list(set(self.parents))

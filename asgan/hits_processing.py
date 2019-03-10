@@ -48,8 +48,7 @@ def process_raw_hits(raw_hits, args):
     with open("{}/hits-1-before.txt".format(args.out_dir), "w") as f:
         for i, hit in enumerate(raw_hits):
             f.write(str(hit) + "\n")
-            if i != len(raw_hits) - 1 and \
-               hit.query_name != raw_hits[i + 1].query_name:
+            if i != len(raw_hits) - 1 and hit.query_name != raw_hits[i + 1].query_name:
                 f.write("\n")
 
     raw_hits.sort(key=lambda hit: (hit.target_name, hit.target_start))
@@ -57,8 +56,7 @@ def process_raw_hits(raw_hits, args):
     with open("{}/hits-2-before.txt".format(args.out_dir), "w") as f:
         for i, hit in enumerate(raw_hits):
             f.write(str(hit) + "\n")
-            if i != len(raw_hits) - 1 and \
-               hit.target_name != raw_hits[i + 1].target_name:
+            if i != len(raw_hits) - 1 and hit.target_name != raw_hits[i + 1].target_name:
                 f.write("\n")
 
     raw_hits = _remove_repetitive_contigs(raw_hits, args)
