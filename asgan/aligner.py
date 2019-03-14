@@ -57,12 +57,12 @@ def align(contigs_query, contigs_target):
     return raw_hits
 
 
-def _run_minimap(contigs_query, contigs_target, output_file):
+def _run_minimap(contigs_query, contigs_target, outfile):
     MINIMAP_BIN = "lib/minimap2/minimap2"
     cmd = [MINIMAP_BIN]
     cmd.extend(["-secondary=no"])
     cmd.extend(["-cx", "asm10"])
     cmd.extend([contigs_target, contigs_query])
-    cmd.extend([">", output_file])
+    cmd.extend([">", outfile])
     cmd.extend(["2> /dev/null"])
     os.system(" ".join(cmd))

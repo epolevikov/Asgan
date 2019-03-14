@@ -1,13 +1,12 @@
 from collections import namedtuple
 
+Link = namedtuple("Link", ["from_name", "from_strand", "to_name", "to_strand"])
+Sequence = namedtuple("Sequence", ["name", "length"])
+
 
 class RecordType:
     SEQUENCE = "S"
     LINK = "L"
-
-
-Link = namedtuple("Link", ["from_name", "from_strand", "to_name", "to_strand"])
-Sequence = namedtuple("Sequence", ["name", "length"])
 
 
 def parse_gfa(gfa_file):

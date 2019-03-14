@@ -2,15 +2,15 @@ import os
 import argparse
 
 import asgan.stats as st
+import asgan.paths as ps
+import asgan.hits as hits
 import asgan.aligner as aligner
+import asgan.assembly_graph as asg
+import asgan.alignment_graph as alg
+import asgan.alignment_blocks as alb
+import asgan.breakpoint_graph as bpg
 import asgan.gfa_parser as gfa_parser
 import asgan.output_generator as out_gen
-import asgan.hits_processing as hits_proc
-import asgan.paths_processing as paths_proc
-import asgan.assembly_graph_processing as agr_proc
-import asgan.alignment_blocks_processing as ab_proc
-import asgan.alignment_graph_processing as aln_gr_proc
-import asgan.breakpoint_graph_processing as bp_gr_proc
 
 import networkx as nx
 
@@ -27,18 +27,18 @@ def get_args():
 
 def align_contigs(args):
     raw_hits = aligner.align(args.contigs_query, args.contigs_target)
-    hits = hits_proc.process_raw_hits(raw_hits, args)
+    processed_hits = hits.process_raw_hits(raw_hits, args)
 
-    aln_blocks_query, aln_blocks_target = ab_proc.extract_alignment_blocks(hits)
-    grouped_aln_blocks_query = ab_proc.group_by_sequence(aln_blocks_query)
-    grouped_aln_blocks_target = ab_proc.group_by_sequence(aln_blocks_target)
+    alignment_blocks_query, alignment_blocks_target = alb.extract_alignment_blocks(processed_hits)
+    grouped_alignment_blocks_query = alb.group_by_sequence(alignment_blocks_query)
+    grouped_alignment_blocks_target = alb.group_by_sequence(alignment_blocks_target)
 
-    return (grouped_aln_blocks_query, grouped_aln_blocks_target, len(aln_blocks_query))
+    return grouped_alignment_blocks_query, grouped_alignment_blocks_target
 
 
-def parse_assembly_graph(graph_gfa, alignment_blocks):
-    sequences, links = gfa_parser.parse_gfa(graph_gfa)
-    assembly_graph = agr_proc.build_assembly_graph(sequences, links)
+def parse_assembly_graph(assembly_graph_gfa, alignment_blocks):
+    sequences, links = gfa_parser.parse_gfa(assembly_graph_gfa)
+    assembly_graph = asg.build_assembly_graph(sequences, links)
     return assembly_graph
 
 
@@ -46,42 +46,53 @@ def main():
     args = get_args()
     os.mkdir(args.out_dir)
 
-    print("1. Aligning contigs")
-    aln_blocks_query, aln_blocks_target, num_aln_blocks = align_contigs(args)
-    out_gen.output_blocks_info(aln_blocks_query, aln_blocks_target, args.out_dir)
+    print("Aligning contigs")
+    alignment_blocks_query, alignment_blocks_target = align_contigs(args)
+    out_gen.output_blocks_info(alignment_blocks_query, alignment_blocks_target, args.out_dir)
 
-    print("2. Parsing assembly graphs")
-    assembly_graph_query = parse_assembly_graph(args.graph_query, aln_blocks_query)
-    assembly_graph_target = parse_assembly_graph(args.graph_target, aln_blocks_target)
+    print("Parsing assembly graphs")
+    assembly_graph_query = parse_assembly_graph(args.graph_query, alignment_blocks_query)
+    assembly_graph_target = parse_assembly_graph(args.graph_target, alignment_blocks_target)
 
     out_gen.assembly_graph_save_dot(assembly_graph_query, "assembly_graph_query", args.out_dir)
     out_gen.assembly_graph_save_dot(assembly_graph_target, "assembly_graph_target", args.out_dir)
 
-    print("3. Building alignment graphs")
-    alignment_graph_query = aln_gr_proc.build_alignment_graph(assembly_graph_query, aln_blocks_query)
-    alignment_graph_target = aln_gr_proc.build_alignment_graph(assembly_graph_target, aln_blocks_target)
+    print("Building alignment graphs")
+    alignment_graph_query = alg.build_alignment_graph(assembly_graph_query, alignment_blocks_query)
+    alignment_graph_target = alg.build_alignment_graph(assembly_graph_target, alignment_blocks_target)
 
-    print("4. Finding shared paths")
-    breakpoint_graph = bp_gr_proc.build_breakpoint_graph(alignment_graph_query, alignment_graph_target,
-                                                         num_aln_blocks)
+    print("Finding shared paths")
+    breakpoint_graph = bpg.build_breakpoint_graph(alignment_graph_query, alignment_graph_target)
 
     max_matching = nx.max_weight_matching(breakpoint_graph)
     out_gen.breakpoint_graph_save_dot(breakpoint_graph, max_matching, args.out_dir)
 
-    paths_graph, paths = paths_proc.reconstruct_paths(breakpoint_graph, max_matching)
-    unused_edges = bp_gr_proc.get_unused_edges(breakpoint_graph, max_matching)
-    out_gen.paths_graph_save_dot(paths_graph, unused_edges, args.out_dir)
+    path_components, alignment_block_paths = ps.reconstruct_alignment_block_paths(
+        alignment_graph_query, alignment_blocks_query,
+        alignment_graph_target, alignment_blocks_target,
+        breakpoint_graph, max_matching)
 
-    block_colors, block_styles = ab_proc.set_block_attributes(paths)
+    full_paths_query = ps.reconstruct_full_paths(
+        alignment_block_paths, alignment_graph_query, alignment_blocks_query)
+    full_paths_target = ps.reconstruct_full_paths(
+        alignment_block_paths, alignment_graph_target, alignment_blocks_target)
+
+    out_gen.save_full_paths(full_paths_query, full_paths_target, args.out_dir)
+
+    unused_edges = bpg.get_unused_edges(breakpoint_graph, max_matching)
+    out_gen.paths_graph_save_dot(path_components, unused_edges, args.out_dir)
+
+    block_colors, block_styles = alb.set_block_attributes(alignment_block_paths)
 
     out_gen.alignment_graph_save_dot(alignment_graph_query, "alignment_graph_query",
                                      block_colors, block_styles, args.out_dir)
     out_gen.alignment_graph_save_dot(alignment_graph_target, "alignment_graph_target",
                                      block_colors, block_styles, args.out_dir)
 
-    print("5. Calculating stats")
-    stats = st.calc_stats(assembly_graph_query, assembly_graph_target,
-                          aln_blocks_query, aln_blocks_target, paths)
+    print("Calculating stats")
+    stats = st.calc_stats(assembly_graph_query,  alignment_blocks_query, full_paths_query,
+                          assembly_graph_target, alignment_blocks_target, full_paths_target,
+                          args.out_dir)
     out_gen.output_stats(stats, args.out_dir)
 
 

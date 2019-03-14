@@ -41,8 +41,7 @@ class PafHit:
 
 
 def process_raw_hits(raw_hits, args):
-    raw_hits = _filter_hits_by_len(raw_hits)
-
+    '''
     raw_hits.sort(key=lambda hit: (hit.query_name, hit.query_start))
 
     with open("{}/hits-1-before.txt".format(args.out_dir), "w") as f:
@@ -78,11 +77,22 @@ def process_raw_hits(raw_hits, args):
             if i != len(raw_hits) - 1 and \
                hit.target_name != raw_hits[i + 1].target_name:
                 f.write("\n")
+    '''
+
+    raw_hits = _filter_hits_by_len(raw_hits)
+    raw_hits = _remove_repetitive_contigs(raw_hits, args)
 
     processed_hits = []
     for raw_hit in raw_hits:
         processed_hit = _process_raw_hit(raw_hit)
         processed_hits.append(processed_hit)
+
+    '''
+    processed_hits.sort(key=lambda hit: (hit.query_name, hit.query_start))
+    with open("{}/processed_hits.txt".format(args.out_dir), "w") as f:
+        for hit in processed_hits:
+            f.write(str(hit) + "\n")
+    '''
 
     united_hits = _unite_processed_hits(processed_hits)
 
@@ -157,8 +167,8 @@ def _remove_repetitive_contigs(raw_hits, args):
         if len(curr_hit_contigs) > 1:
             repetitive_contigs.add(curr_hit.target_name)
 
-    with open("{}/repetitive_contigs.txt".format(args.out_dir), "w") as f:
-        f.write(str(repetitive_contigs))
+    # with open("{}/repetitive_contigs.txt".format(args.out_dir), "w") as f:
+    #    f.write(str(repetitive_contigs))
 
     unique_hits = [hit for hit in raw_hits
                    if hit.query_name not in repetitive_contigs
@@ -188,16 +198,13 @@ def _process_raw_hit(raw_hit):
 
 
 def _unite_processed_hits(processed_hits):
-    processed_hits.sort(key=lambda hit: (-hit.query_len,
-                                         hit.query_name,
-                                         hit.query_start))
+    processed_hits.sort(key=lambda hit: (-hit.query_len, hit.query_name, hit.query_start))
 
     united_hits = []
     curr_hit = processed_hits[0]
-    i = 1
     max_hits_dist = 5 * 10**4
 
-    while i < len(processed_hits):
+    for i in range(1, len(processed_hits)):
         next_hit = processed_hits[i]
 
         query_hits_dist = next_hit.query_start - curr_hit.query_end
@@ -205,15 +212,13 @@ def _unite_processed_hits(processed_hits):
 
         if curr_hit.query_name != next_hit.query_name \
            or curr_hit.target_name != next_hit.target_name \
-           or query_hits_dist > max_hits_dist \
-           or target_hits_dist > max_hits_dist:
+           or not (0 <= query_hits_dist <= max_hits_dist) \
+           or not (0 <= target_hits_dist <= max_hits_dist):
             united_hits.append(curr_hit)
             curr_hit = processed_hits[i]
         else:
             curr_hit.query_end = next_hit.query_end
             curr_hit.target_end = next_hit.target_end
-
-        i += 1
 
     united_hits.append(curr_hit)
     return united_hits

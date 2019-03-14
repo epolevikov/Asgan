@@ -1,3 +1,4 @@
+from asgan.stats import calc_path_length
 
 
 def output_blocks_info(aln_blocks_query, aln_blocks_target, out_dir):
@@ -59,12 +60,16 @@ def alignment_graph_save_dot(graph, outfile, block_colors, block_styles, outdir)
 
     with open("{}/{}.gv".format(outdir, outfile), "w") as f:
         f.write("digraph {\n")
-        f.write("  node [shape=point, width=0.06]\n")
+        # f.write("  node [shape=point, width=0.06]\n")
         f.write("  edge [fontsize=20]\n")
         f.write("  graph[center=true, margin=0.5, ")
         f.write("nodesep=0.45, ranksep=0.35]\n")
 
-        for (node_from, node_to, data) in graph.edges(data=True):
+        for node, data in graph.nodes(data=True):
+            dist = data.get("distance")
+            f.write("  {} [label=\"{}\"]\n".format(node, dist))
+
+        for node_from, node_to, data in graph.edges(data=True):
             edge_color = get_edge_color(data["name"])
             edge_label = get_edge_label(data["name"])
             edge_style = get_edge_style(data["name"])
@@ -128,15 +133,50 @@ def paths_graph_save_dot(paths, unused_edges, out_dir):
     save("paths_with_unused_edges", with_unused_edges=True)
 
 
+def save_full_paths(paths_query, paths_target, outdir):
+    def write_path(path, f):
+        path_length = calc_path_length(path)
+
+        for i in range(len(path)):
+            if i % 2 == 0:
+                f.write("{} [{}]\n".format(path[i].signed_id(), pretty_number(path[i].length())))
+            else:
+                for (sequence_name, sequence_length) in path[i]:
+                    f.write("  {} [{}]\n".format(sequence_name, pretty_number(sequence_length)))
+
+        f.write("length={}\n\n".format(pretty_number(path_length)))
+
+    with open("{}/paths.txt".format(outdir), "w") as f:
+        for i in range(len(paths_query)):
+            f.write("query forward:\n")
+            write_path(paths_query[i][0], f)
+            f.write("query reverse:\n")
+            write_path(paths_query[i][1], f)
+
+            f.write("target forward:\n")
+            write_path(paths_target[i][0], f)
+            f.write("target reverse:\n")
+            write_path(paths_target[i][1], f)
+            f.write("------------\n")
+
+
 def output_stats(stats, outdir):
     with open("{}/stats.txt".format(outdir), "w") as f:
-        f.write("\twcc\tcontigs\tpaths\n")
-        f.write("Query\t{}\t{}\t{}\n".format(stats["query_num_wcc"],
-                                             stats["query_num_contigs"],
-                                             2 * stats["num_paths"]))
-        f.write("Target\t{}\t{}\t{}\n".format(stats["target_num_wcc"],
-                                              stats["target_num_contigs"],
-                                              2 * stats["num_paths"]))
+        f.write("\twcc\tcontigs\tpaths\tN50\t\tNA50\t\tNP50\n")
+        f.write("Query\t{}\t{}\t{}\t{}\t\t{}\t\t{}\n".format(
+            stats["number_wcc_query"],
+            stats["number_contigs_query"],
+            stats["number_paths"],
+            pretty_number(stats["contigs_n50_query"]),
+            pretty_number(stats["alignment_blocks_n50_query"]),
+            pretty_number(stats["paths_n50_query"])))
+        f.write("Target\t{}\t{}\t{}\t{}\t\t{}\t\t{}\n".format(
+            stats["number_wcc_target"],
+            stats["number_contigs_target"],
+            stats["number_paths"],
+            pretty_number(stats["contigs_n50_query"]),
+            pretty_number(stats["alignment_blocks_n50_target"]),
+            pretty_number(stats["paths_n50_target"])))
 
 
 def pretty_number(number):
