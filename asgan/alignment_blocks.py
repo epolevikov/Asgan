@@ -34,9 +34,11 @@ def extract_alignment_blocks(hits):
         aln_block_query = AlignmentBlock(hit.id,
                                          hit.query_name, hit.query_len,
                                          hit.query_start, hit.query_end)
+
         aln_block_target = AlignmentBlock(hit.id,
                                           hit.target_name, hit.target_len,
                                           hit.target_start, hit.target_end)
+
         aln_blocks_query.append(aln_block_query)
         aln_blocks_target.append(aln_block_target)
 

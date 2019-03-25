@@ -12,34 +12,63 @@ def calc_stats(assembly_graph_query, alignment_blocks_query, full_paths_query,
     contig_lengths_query = [edge[2]["length"] for edge in assembly_graph_query.edges(data=True)]
     contig_lengths_target = [edge[2]["length"] for edge in assembly_graph_target.edges(data=True)]
 
-    contigs_n50_query, _ = calc_nx(contig_lengths_query)
-    contigs_n50_target, _ = calc_nx(contig_lengths_target)
+    contigs_total_length_query = sum(contig_lengths_query)
+    contigs_total_length_target = sum(contig_lengths_target)
+
+    contigs_n50_query, contigs_l50_query = calc_nx(contig_lengths_query)
+    contigs_n50_target, contigs_l50_target = calc_nx(contig_lengths_target)
 
     alignment_block_lengths_query = calc_alignment_block_lengths(alignment_blocks_query)
     alignment_block_lengths_target = calc_alignment_block_lengths(alignment_blocks_target)
 
-    alignment_blocks_n50_query, _ = calc_nx(alignment_block_lengths_query)
-    alignment_blocks_n50_target, _ = calc_nx(alignment_block_lengths_target)
+    alignment_blocks_total_length_query = sum(alignment_block_lengths_query)
+    alignment_blocks_total_length_target = sum(alignment_block_lengths_target)
+
+    number_alignment_blocks = len(alignment_block_lengths_query)
+
+    alignment_blocks_n50_query, alignment_blocks_l50_query = calc_nx(alignment_block_lengths_query)
+    alignment_blocks_n50_target, alignment_blocks_l50_target = calc_nx(alignment_block_lengths_target)
 
     path_lengths_query = calc_path_lengths(full_paths_query)
     path_lengths_target = calc_path_lengths(full_paths_target)
 
-    paths_n50_query, _ = calc_nx(path_lengths_query)
-    paths_n50_target, _ = calc_nx(path_lengths_target)
+    paths_total_length_query = sum(path_lengths_query)
+    paths_total_length_target = sum(path_lengths_target)
+
+    number_paths = len(path_lengths_query)
+
+    paths_n50_query, paths_l50_query = calc_nx(path_lengths_query)
+    paths_n50_target, paths_l50_target = calc_nx(path_lengths_target)
 
     stats = dict()
 
     stats["number_wcc_query"] = number_wcc_query
     stats["number_wcc_target"] = number_wcc_target
+
     stats["number_contigs_query"] = number_contigs_query
     stats["number_contigs_target"] = number_contigs_target
     stats["contigs_n50_query"] = contigs_n50_query
     stats["contigs_n50_target"] = contigs_n50_target
+    stats["contigs_l50_query"] = contigs_l50_query
+    stats["contigs_l50_target"] = contigs_l50_target
+    stats["contigs_total_length_query"] = contigs_total_length_query
+    stats["contigs_total_length_target"] = contigs_total_length_target
+
+    stats["number_alignment_blocks"] = number_alignment_blocks
     stats["alignment_blocks_n50_query"] = alignment_blocks_n50_query
     stats["alignment_blocks_n50_target"] = alignment_blocks_n50_target
+    stats["alignment_blocks_l50_query"] = alignment_blocks_l50_query
+    stats["alignment_blocks_l50_target"] = alignment_blocks_l50_target
+    stats["alignment_blocks_total_length_query"] = alignment_blocks_total_length_query
+    stats["alignment_blocks_total_length_target"] = alignment_blocks_total_length_target
+
+    stats["number_paths"] = number_paths
     stats["paths_n50_query"] = paths_n50_query
     stats["paths_n50_target"] = paths_n50_target
-    stats["number_paths"] = 2 * len(path_lengths_query)
+    stats["paths_l50_query"] = paths_l50_query
+    stats["paths_l50_target"] = paths_l50_target
+    stats["paths_total_length_query"] = paths_total_length_query
+    stats["paths_total_length_target"] = paths_total_length_target
 
     return stats
 
@@ -58,6 +87,7 @@ def calc_path_lengths(paths):
 
     for path in paths:
         path_lengths.append(calc_path_length(path[0]))
+        path_lengths.append(calc_path_length(path[1]))
 
     return path_lengths
 

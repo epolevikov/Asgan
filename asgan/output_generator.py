@@ -24,13 +24,15 @@ def output_blocks_info(aln_blocks_query, aln_blocks_target, out_dir):
 
 
 def assembly_graph_save_dot(graph, outfile, outdir):
-    with open("{}/{}.gv".format(outdir, outfile), "w") as f:
+    with open("{}/{}".format(outdir, outfile), "w") as f:
         f.write("digraph {\n")
         f.write("  node [shape=point]\n")
         f.write("  edge [penwidth=5, color=green, fontsize=20]\n")
 
         for (node_from, node_to, data) in graph.edges(data=True):
-            f.write("  {} -> {} [label=\"{}\"]\n".format(node_from, node_to, data["name"]))
+            color = ["green", "black"][data["is_repeat"]]
+            f.write("  {} -> {} [label=\"{}\", color=\"{}\"]\n".format(
+                node_from, node_to, data["name"], color))
 
         f.write("}\n")
 
@@ -58,16 +60,18 @@ def alignment_graph_save_dot(graph, outfile, block_colors, block_styles, outdir)
 
         return "solid"
 
-    with open("{}/{}.gv".format(outdir, outfile), "w") as f:
+    with open("{}/{}".format(outdir, outfile), "w") as f:
         f.write("digraph {\n")
-        # f.write("  node [shape=point, width=0.06]\n")
+        f.write("  node [shape=point, width=0.06]\n")
         f.write("  edge [fontsize=20]\n")
         f.write("  graph[center=true, margin=0.5, ")
         f.write("nodesep=0.45, ranksep=0.35]\n")
 
+        '''
         for node, data in graph.nodes(data=True):
             dist = data.get("distance")
             f.write("  {} [label=\"{}\"]\n".format(node, dist))
+        '''
 
         for node_from, node_to, data in graph.edges(data=True):
             edge_color = get_edge_color(data["name"])
@@ -150,36 +154,54 @@ def save_full_paths(paths_query, paths_target, outdir):
         for i in range(len(paths_query)):
             f.write("query forward:\n")
             write_path(paths_query[i][0], f)
-            f.write("query reverse:\n")
-            write_path(paths_query[i][1], f)
-
             f.write("target forward:\n")
             write_path(paths_target[i][0], f)
+
+            f.write("query reverse:\n")
+            write_path(paths_query[i][1], f)
             f.write("target reverse:\n")
             write_path(paths_target[i][1], f)
-            f.write("------------\n")
+            f.write("------------\n\n")
 
 
 def output_stats(stats, outdir):
+    min_length = 12
     with open("{}/stats.txt".format(outdir), "w") as f:
-        f.write("\twcc\tcontigs\tpaths\tN50\t\tNA50\t\tNP50\n")
-        f.write("Query\t{}\t{}\t{}\t{}\t\t{}\t\t{}\n".format(
-            stats["number_wcc_query"],
-            stats["number_contigs_query"],
-            stats["number_paths"],
-            pretty_number(stats["contigs_n50_query"]),
-            pretty_number(stats["alignment_blocks_n50_query"]),
-            pretty_number(stats["paths_n50_query"])))
-        f.write("Target\t{}\t{}\t{}\t{}\t\t{}\t\t{}\n".format(
-            stats["number_wcc_target"],
-            stats["number_contigs_target"],
-            stats["number_paths"],
-            pretty_number(stats["contigs_n50_query"]),
-            pretty_number(stats["alignment_blocks_n50_target"]),
-            pretty_number(stats["paths_n50_target"])))
+        f.write("\tQuery       \tTarget\n")
+        f.write("CC\t{}\t{}\n\n".format(pretty_number(stats["number_wcc_query"], min_length=min_length),
+                                        pretty_number(stats["number_wcc_target"], min_length=min_length)))
+
+        f.write("Contigs\t{}\t{}\n".format(pretty_number(stats["number_contigs_query"], min_length=min_length),
+                                           pretty_number(stats["number_contigs_target"], min_length=min_length)))
+        f.write("Tlen\t{}\t{}\n".format(pretty_number(stats["contigs_total_length_query"], min_length=min_length),
+                                        pretty_number(stats["contigs_total_length_target"], min_length=min_length)))
+        f.write("N50\t{}\t{}\n".format(pretty_number(stats["contigs_n50_query"], min_length=min_length),
+                                       pretty_number(stats["contigs_n50_target"], min_length=min_length)))
+        f.write("L50\t{}\t{}\n\n".format(pretty_number(stats["contigs_l50_query"], min_length=min_length),
+                                         pretty_number(stats["contigs_l50_target"], min_length=min_length)))
+
+        f.write("Blocks\t{}\t{}\n".format(pretty_number(stats["number_alignment_blocks"], min_length=min_length),
+                                          pretty_number(stats["number_alignment_blocks"], min_length=min_length)))
+        f.write("Tlen\t{}\t{}\n".format(pretty_number(stats["alignment_blocks_total_length_query"],
+                                                      min_length=min_length),
+                                        pretty_number(stats["alignment_blocks_total_length_target"],
+                                                      min_length=min_length)))
+        f.write("NA50\t{}\t{}\n".format(pretty_number(stats["alignment_blocks_n50_query"], min_length=min_length),
+                                        pretty_number(stats["alignment_blocks_n50_target"], min_length=min_length)))
+        f.write("LA50\t{}\t{}\n\n".format(pretty_number(stats["alignment_blocks_l50_query"], min_length=min_length),
+                                          pretty_number(stats["alignment_blocks_l50_target"], min_length=min_length)))
+
+        f.write("Paths\t{}\t{}\n".format(pretty_number(stats["number_paths"], min_length=min_length),
+                                         pretty_number(stats["number_paths"], min_length=min_length)))
+        f.write("Tlen\t{}\t{}\n".format(pretty_number(stats["paths_total_length_query"], min_length=min_length),
+                                        pretty_number(stats["paths_total_length_target"], min_length=min_length)))
+        f.write("NP50\t{}\t{}\n".format(pretty_number(stats["paths_n50_query"], min_length=min_length),
+                                        pretty_number(stats["paths_n50_target"], min_length=min_length)))
+        f.write("LP50\t{}\t{}\n".format(pretty_number(stats["paths_l50_query"], min_length=min_length),
+                                        pretty_number(stats["paths_l50_target"], min_length=min_length)))
 
 
-def pretty_number(number):
+def pretty_number(number, min_length=None, fill=" "):
     digits = []
     number = str(number)
     is_neg = False
@@ -197,5 +219,8 @@ def pretty_number(number):
     number = "\'".join(digits)
     if is_neg:
         number = "-" + number
+
+    if min_length is not None and len(number) < min_length:
+        number += " " * (min_length - len(number))
 
     return number

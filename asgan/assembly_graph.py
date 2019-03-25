@@ -3,9 +3,10 @@ from asgan.utils import DisjointSet
 
 
 class Sequence:
-    def __init__(self, name, length, strand):
+    def __init__(self, name, length, strand, depth):
         self.name = name + strand
         self.length = length
+        self.depth = depth
 
 
 def build_assembly_graph(raw_sequences, links):
@@ -14,10 +15,10 @@ def build_assembly_graph(raw_sequences, links):
     curr_id = 0
 
     for seq in raw_sequences:
-        sequences.append(Sequence(seq.name, seq.length, "+"))
+        sequences.append(Sequence(seq.name, seq.length, "+", seq.depth))
         sequence2id[seq.name + "+"] = curr_id
 
-        sequences.append(Sequence(seq.name, seq.length, "-"))
+        sequences.append(Sequence(seq.name, seq.length, "-", seq.depth))
         sequence2id[seq.name + "-"] = curr_id + 1
 
         curr_id += 2
@@ -34,22 +35,43 @@ def build_assembly_graph(raw_sequences, links):
     for i, seq in enumerate(sequences):
         node_from = disjoint_set.find(2 * i)
         node_to = disjoint_set.find(2 * i + 1)
-        assembly_graph.add_edge(node_from, node_to, name=seq.name, length=seq.length)
+        assembly_graph.add_edge(node_from, node_to, name=seq.name,
+                                length=seq.length, depth=seq.depth)
 
     return assembly_graph
 
 
-def remove_components_without_alignment_blocks(assembly_graph, alignment_blocks):
-    def check_component(wcc):
-        for (node_from, node_to, data) in wcc.edges(data=True):
-            if data["name"] in alignment_blocks:
-                return True
+def mark_repeats(assembly_graph, normalize_depth=False):
+    if not normalize_depth:
+        for (_, _, data) in assembly_graph.edges(data=True):
+            is_repeat = (data["depth"] > 1 or data["length"] < 50000)
+            data["is_repeat"] = is_repeat
+    else:
+        depths, lengths = [], []
 
-        return False
+        for (_, _, data) in assembly_graph.edges(data=True):
+            depths.append(data["depth"])
+            lengths.append(data["length"])
 
-    components_with_alignment_blocks = nx.MultiDiGraph()
-    for wcc in nx.weakly_connected_component_subgraphs(assembly_graph, copy=False):
-        if check_component(wcc):
-            components_with_alignment_blocks = nx.union(components_with_alignment_blocks, wcc)
+        weighted_depths_sum = sum([depths[i] * lengths[i] for i in range(len(depths))])
+        weighted_mean_depth = weighted_depths_sum / sum(lengths)
 
-    return components_with_alignment_blocks
+        for (_, _, data) in assembly_graph.edges(data=True):
+            is_repeat = (data["depth"] >= 1.5 * weighted_mean_depth or data["length"] < 50000)
+            data["is_repeat"] = is_repeat
+
+
+def mark_sequences_without_alignment_blocks(assembly_graph, alignment_blocks):
+    for (_, _, data) in assembly_graph.edges(data=True):
+        if data["name"] not in alignment_blocks:
+            data["is_repeat"] = True
+
+
+def get_repeats(assembly_graph):
+    repeats = set()
+
+    for (_, _, data) in assembly_graph.edges(data=True):
+        if data["is_repeat"]:
+            repeats.add(data["name"][:-1])
+
+    return repeats

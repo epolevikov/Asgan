@@ -48,6 +48,7 @@ class RawPafHit:
 
 def align(contigs_query, contigs_target):
     output_file = "minimap.paf"
+
     _run_minimap(contigs_query, contigs_target, output_file)
 
     with open(output_file) as f:
@@ -58,11 +59,13 @@ def align(contigs_query, contigs_target):
 
 
 def _run_minimap(contigs_query, contigs_target, outfile):
-    MINIMAP_BIN = "lib/minimap2/minimap2"
+    MINIMAP_BIN = "lib/Flye/bin/flye-minimap2"
     cmd = [MINIMAP_BIN]
     cmd.extend(["-secondary=no"])
     cmd.extend(["-cx", "asm10"])
     cmd.extend([contigs_target, contigs_query])
     cmd.extend([">", outfile])
     cmd.extend(["2> /dev/null"])
-    os.system(" ".join(cmd))
+    cmd = " ".join(cmd)
+
+    os.system(cmd)

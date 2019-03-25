@@ -5,8 +5,7 @@ from asgan.breakpoint_graph import build_block2edge_dict, build_contracted_align
 
 def reconstruct_alignment_block_paths(alignment_graph_query, alignment_blocks_query,
                                       alignment_graph_target, alignment_blocks_target,
-                                      breakpoint_graph, max_matching):
-    path_components = _build_path_components(breakpoint_graph, max_matching)
+                                      path_components):
     components = nx.connected_component_subgraphs(path_components)
     node_labels = nx.get_node_attributes(path_components, "label")
 
@@ -46,14 +45,14 @@ def reconstruct_alignment_block_paths(alignment_graph_query, alignment_blocks_qu
         complement_alignment_block_path = _complement_path(alignment_block_path)
         alignment_block_paths.append((alignment_block_path, complement_alignment_block_path))
 
-    return path_components, alignment_block_paths
+    return alignment_block_paths
 
 
 def reconstruct_full_paths(alignment_block_paths, alignment_graph, alignment_blocks):
     contracted_alignment_graph = build_contracted_alignment_graph(alignment_graph)
     edge2data = _build_edge2data_dict(contracted_alignment_graph)
     block2edge = build_block2edge_dict(alignment_graph)
-    id2block = _build_id2block_dict(alignment_blocks)
+    id2block = build_id2block_dict(alignment_blocks)
 
     full_paths = []
     for alignment_block_path in alignment_block_paths:
@@ -99,22 +98,22 @@ def reconstruct_full_path_from_alignment_block_path(alignment_block_path, contra
 
 
 def reconstruct_path_between_blocks(block_from, block_to, contracted_alignment_graph, block2edge, edge2data):
-    (node_from1, node_to1) = block2edge[block_from.signed_id()]
-    (node_from2, node_to2) = block2edge[block_to.signed_id()]
+    (from_start, from_end) = block2edge[block_from.signed_id()]
+    (to_start, to_end) = block2edge[block_to.signed_id()]
 
-    if node_to1 == node_from2:
-        dist = contracted_alignment_graph.nodes[node_to1].get("distance")
+    if from_end == to_start:
+        dist = contracted_alignment_graph.nodes[from_end].get("distance")
 
         if dist is None:
             dist = block_to.start + (block_from.seq_length - block_from.end)
 
         return [("", dist)]
 
-    path_nodes = nx.dijkstra_path(contracted_alignment_graph, node_to1, node_from2)
+    path_nodes = nx.dijkstra_path(contracted_alignment_graph, from_end, to_start)
 
     path = []
     if not path_nodes:
-        data = edge2data[(node_to1, node_from2)]
+        data = edge2data[(from_end, to_start)]
         path.append((data["name"], data["weight"]))
         return path
 
@@ -126,7 +125,7 @@ def reconstruct_path_between_blocks(block_from, block_to, contracted_alignment_g
     return path
 
 
-def _build_id2block_dict(alignment_blocks):
+def build_id2block_dict(alignment_blocks):
     id2block = dict()
 
     for blocks in alignment_blocks.values():
@@ -146,27 +145,6 @@ def _build_edge2data_dict(contracted_alignment_graph):
             edge2data_dict[(node_from, node_to)] = data
 
     return edge2data_dict
-
-
-def _build_path_components(breakpoint_graph, max_matching):
-    path_components = nx.Graph()
-
-    for (node, data) in breakpoint_graph.nodes(data=True):
-        path_components.add_node(node, **data)
-
-    for (node_from, node_to) in max_matching:
-        path_components.add_edge(node_from, node_to)
-
-    for (node_from, data_from) in breakpoint_graph.nodes(data=True):
-        for (node_to, data_to) in breakpoint_graph.nodes(data=True):
-            if node_from == node_to:
-                continue
-
-            label_from, label_to = data_from["label"], data_to["label"]
-            if label_from[:-1] == label_to[:-1]:
-                path_components.add_edge(node_from, node_to)
-
-    return path_components
 
 
 def _complement_path(path):

@@ -1,7 +1,7 @@
 from collections import namedtuple
 
 Link = namedtuple("Link", ["from_name", "from_strand", "to_name", "to_strand"])
-Sequence = namedtuple("Sequence", ["name", "length"])
+Sequence = namedtuple("Sequence", ["name", "length", "seq", "depth"])
 
 
 class RecordType:
@@ -28,10 +28,26 @@ def parse_gfa(gfa_file):
     return sequences, list(set(links))
 
 
+def extract_sequences_from_gfa(gfa_file, out_dir, out_name):
+    with open(gfa_file) as fin, open("{}/{}".format(out_dir, out_name), "w") as fout:
+        for line in fin:
+            record = line.strip().split()
+            record_type = record[0]
+
+            if record_type == RecordType.SEQUENCE:
+                sequence = _parse_sequence(record)
+                fout.write(">{}\n{}\n".format(sequence.name, sequence.seq))
+
+    return "{}/{}".format(out_dir, out_name)
+
+
 def _parse_sequence(record):
-    name, seq = record[1], record[2]
-    length = record[3].split(":")[-1] if seq == "*" else len(seq)
-    return Sequence(name, int(length))
+    name = record[1]
+    seq = record[2]
+    length = len(seq)
+    depth = int(record[3].split(":")[-1])
+
+    return Sequence(name, length, seq, depth)
 
 
 def _parse_link(record):

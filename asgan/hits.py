@@ -40,7 +40,7 @@ class PafHit:
         return query_info + target_info
 
 
-def process_raw_hits(raw_hits, args):
+def process_raw_hits(raw_hits, repeats_query, repeats_target, args):
     '''
     raw_hits.sort(key=lambda hit: (hit.query_name, hit.query_start))
 
@@ -57,9 +57,9 @@ def process_raw_hits(raw_hits, args):
             f.write(str(hit) + "\n")
             if i != len(raw_hits) - 1 and hit.target_name != raw_hits[i + 1].target_name:
                 f.write("\n")
+    '''
 
-    raw_hits = _remove_repetitive_contigs(raw_hits, args)
-
+    '''
     raw_hits.sort(key=lambda hit: (hit.query_name, hit.query_start))
 
     with open("{}/hits-1-after.txt".format(args.out_dir), "w") as f:
@@ -79,20 +79,16 @@ def process_raw_hits(raw_hits, args):
                 f.write("\n")
     '''
 
+    # raw_hits = _filter_hits_by_len(raw_hits)
+    # raw_hits = _remove_repetitive_contigs(raw_hits, args)
+
     raw_hits = _filter_hits_by_len(raw_hits)
-    raw_hits = _remove_repetitive_contigs(raw_hits, args)
+    raw_hits = _filter_repeats(raw_hits, repeats_query, repeats_target)
 
     processed_hits = []
     for raw_hit in raw_hits:
         processed_hit = _process_raw_hit(raw_hit)
         processed_hits.append(processed_hit)
-
-    '''
-    processed_hits.sort(key=lambda hit: (hit.query_name, hit.query_start))
-    with open("{}/processed_hits.txt".format(args.out_dir), "w") as f:
-        for hit in processed_hits:
-            f.write(str(hit) + "\n")
-    '''
 
     united_hits = _unite_processed_hits(processed_hits)
 
@@ -107,7 +103,7 @@ def process_raw_hits(raw_hits, args):
     return hits
 
 
-def _filter_hits_by_len(raw_hits, min_hit_length=20000):
+def _filter_hits_by_len(raw_hits, min_hit_length=50000):
     filtered_hits = []
 
     for raw_hit in raw_hits:
@@ -122,6 +118,22 @@ def _filter_hits_by_len(raw_hits, min_hit_length=20000):
     return filtered_hits
 
 
+def _filter_repeats(raw_hits, repeats_query, repeats_target):
+    filtered_hits = []
+
+    for hit in raw_hits:
+        if hit.query_name in repeats_query:
+            continue
+
+        if hit.target_name in repeats_target:
+            continue
+
+        filtered_hits.append(hit)
+
+    return filtered_hits
+
+
+'''
 def _remove_repetitive_contigs(raw_hits, args):
     repetitive_contigs = set()
 
@@ -175,6 +187,7 @@ def _remove_repetitive_contigs(raw_hits, args):
                    and hit.target_name not in repetitive_contigs]
 
     return unique_hits
+'''
 
 
 def _process_raw_hit(raw_hit):
