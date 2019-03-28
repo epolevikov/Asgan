@@ -29,7 +29,9 @@ def parse_gfa(gfa_file):
 
 
 def extract_sequences_from_gfa(gfa_file, out_dir, out_name):
-    with open(gfa_file) as fin, open("{}/{}".format(out_dir, out_name), "w") as fout:
+    outfile = "{}/{}".format(out_dir, out_name)
+
+    with open(gfa_file) as fin, open(outfile, "w") as fout:
         for line in fin:
             record = line.strip().split()
             record_type = record[0]
@@ -38,14 +40,51 @@ def extract_sequences_from_gfa(gfa_file, out_dir, out_name):
                 sequence = _parse_sequence(record)
                 fout.write(">{}\n{}\n".format(sequence.name, sequence.seq))
 
-    return "{}/{}".format(out_dir, out_name)
+    return outfile
+
+
+def build_gfa_from_fasta(sequences_fasta, out_dir, out_name):
+    outfile = "{}/{}".format(out_dir, out_name)
+
+    with open(sequences_fasta) as fin, open(outfile, "w") as fout:
+        fout.write("H\tVN:Z:1.0\n")
+        for header, seq in read_fasta(fin):
+            fout.write("S\t{}\t*\tLN:i:{}\n".format(header, len(seq)))
+
+    return outfile
+
+
+def read_fasta(filename):
+    header = None
+    seq = []
+
+    for line in filename:
+        line = line.strip()
+        if not line:
+            continue
+
+        if line.startswith(">"):
+            if header:
+                yield header, "".join(seq)
+                seq = []
+            header = line[1:].split(" ")[0]
+        else:
+            seq.append(line)
+
+    if header and len(seq):
+        yield header, "".join(seq)
 
 
 def _parse_sequence(record):
     name = record[1]
     seq = record[2]
-    length = len(seq)
-    depth = int(record[3].split(":")[-1])
+
+    if seq == "*":
+        length = int(record[3].split(":")[-1])
+        depth = 0
+    else:
+        length = len(seq)
+        depth = int(record[3].split(":")[-1])
 
     return Sequence(name, length, seq, depth)
 

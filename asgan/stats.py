@@ -6,11 +6,12 @@ def calc_stats(assembly_graph_query, alignment_blocks_query, full_paths_query,
     number_wcc_query = nx.number_weakly_connected_components(assembly_graph_query)
     number_wcc_target = nx.number_weakly_connected_components(assembly_graph_target)
 
-    number_contigs_query = len(assembly_graph_query.edges())
-    number_contigs_target = len(assembly_graph_target.edges())
+    # contigs
+    contig_lengths_query = get_contig_lengths(assembly_graph_query)
+    contig_lengths_target = get_contig_lengths(assembly_graph_target)
 
-    contig_lengths_query = [edge[2]["length"] for edge in assembly_graph_query.edges(data=True)]
-    contig_lengths_target = [edge[2]["length"] for edge in assembly_graph_target.edges(data=True)]
+    number_contigs_query = len(contig_lengths_query)
+    number_contigs_target = len(contig_lengths_target)
 
     contigs_total_length_query = sum(contig_lengths_query)
     contigs_total_length_target = sum(contig_lengths_target)
@@ -18,8 +19,9 @@ def calc_stats(assembly_graph_query, alignment_blocks_query, full_paths_query,
     contigs_n50_query, contigs_l50_query = calc_nx(contig_lengths_query)
     contigs_n50_target, contigs_l50_target = calc_nx(contig_lengths_target)
 
-    alignment_block_lengths_query = calc_alignment_block_lengths(alignment_blocks_query)
-    alignment_block_lengths_target = calc_alignment_block_lengths(alignment_blocks_target)
+    # alignment blocks
+    alignment_block_lengths_query = get_alignment_block_lengths(alignment_blocks_query)
+    alignment_block_lengths_target = get_alignment_block_lengths(alignment_blocks_target)
 
     alignment_blocks_total_length_query = sum(alignment_block_lengths_query)
     alignment_blocks_total_length_target = sum(alignment_block_lengths_target)
@@ -29,8 +31,9 @@ def calc_stats(assembly_graph_query, alignment_blocks_query, full_paths_query,
     alignment_blocks_n50_query, alignment_blocks_l50_query = calc_nx(alignment_block_lengths_query)
     alignment_blocks_n50_target, alignment_blocks_l50_target = calc_nx(alignment_block_lengths_target)
 
-    path_lengths_query = calc_path_lengths(full_paths_query)
-    path_lengths_target = calc_path_lengths(full_paths_target)
+    # paths
+    path_lengths_query = get_path_lengths(full_paths_query)
+    path_lengths_target = get_path_lengths(full_paths_target)
 
     paths_total_length_query = sum(path_lengths_query)
     paths_total_length_target = sum(path_lengths_target)
@@ -73,23 +76,25 @@ def calc_stats(assembly_graph_query, alignment_blocks_query, full_paths_query,
     return stats
 
 
-def calc_alignment_block_lengths(alignment_blocks):
+def filter_complement(lengths):
+    return [length for i, length in enumerate(sorted(lengths)) if i % 2 == 0]
+
+
+def get_contig_lengths(assembly_graph):
+    return filter_complement([data["length"] for _, _, data in assembly_graph.edges(data=True)])
+
+
+def get_alignment_block_lengths(alignment_blocks):
     alignment_block_lengths = []
 
     for blocks in alignment_blocks.values():
         alignment_block_lengths.extend([block.length() for block in blocks])
 
-    return alignment_block_lengths
+    return filter_complement(alignment_block_lengths)
 
 
-def calc_path_lengths(paths):
-    path_lengths = []
-
-    for path in paths:
-        path_lengths.append(calc_path_length(path[0]))
-        path_lengths.append(calc_path_length(path[1]))
-
-    return path_lengths
+def get_path_lengths(paths):
+    return [calc_path_length(path[0]) for path in paths]
 
 
 def calc_path_length(path):
@@ -99,8 +104,7 @@ def calc_path_length(path):
         if i % 2 == 0:
             path_length += path[i].length()
         else:
-            for (_, sequence_length) in path[i]:
-                path_length += sequence_length
+            path_length += sum([seq_length for _, seq_length in path[i]])
 
     if len(path) > 1 and path[0].signed_id() == path[-1].signed_id():
         path_length -= path[0].length()

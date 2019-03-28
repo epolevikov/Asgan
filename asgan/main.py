@@ -20,6 +20,7 @@ def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("--input-query")
     parser.add_argument("--input-target")
+    parser.add_argument("--ref", type=bool, default=False)
     parser.add_argument("--out-dir")
     return parser.parse_args()
 
@@ -60,26 +61,60 @@ def main():
     args = parse_args()
     os.mkdir(args.out_dir)
 
-    gfa_query, gfa_target = parse_input(args)
+    if args.ref:
+        gfa_query = args.input_query
+        gfa_target = gfa_parser.build_gfa_from_fasta(
+            sequences_fasta=args.input_target,
+            out_dir=args.out_dir,
+            out_name="graph_target.gfa")
 
-    print("Building assembly graphs")
+        print("Building assembly graphs")
 
-    assembly_graph_query = build_assembly_graph_from_gfa(gfa_query)
-    assembly_graph_target = build_assembly_graph_from_gfa(gfa_target)
+        assembly_graph_query = build_assembly_graph_from_gfa(gfa_query)
+        assembly_graph_target = build_assembly_graph_from_gfa(gfa_target)
 
-    asg.mark_repeats(assembly_graph_query)
-    asg.mark_repeats(assembly_graph_target, normalize_depth=True)
+        asg.mark_repeats(assembly_graph_query)
 
-    repeats_query = asg.get_repeats(assembly_graph_query)
-    repeats_target = asg.get_repeats(assembly_graph_target)
+        repeats_query = asg.get_repeats(assembly_graph_query)
+        repeats_target = set()
 
-    sequences_fasta_query = gfa_parser.extract_sequences_from_gfa(
-        gfa_file=gfa_query, out_dir=args.out_dir,
-        out_name="sequences_query.fasta")
+        sequences_fasta_query = gfa_parser.extract_sequences_from_gfa(
+            gfa_file=gfa_query, out_dir=args.out_dir,
+            out_name="sequences_query.fasta")
 
-    sequences_fasta_target = gfa_parser.extract_sequences_from_gfa(
-        gfa_file=gfa_target, out_dir=args.out_dir,
-        out_name="sequences_target.fasta")
+        sequences_fasta_target = args.input_target
+
+        if args.input_query.endswith(".fasta"):
+            os.remove(gfa_query)
+
+        os.remove(gfa_target)
+    else:
+        gfa_query, gfa_target = parse_input(args)
+
+        print("Building assembly graphs")
+
+        assembly_graph_query = build_assembly_graph_from_gfa(gfa_query)
+        assembly_graph_target = build_assembly_graph_from_gfa(gfa_target)
+
+        asg.mark_repeats(assembly_graph_query)
+        asg.mark_repeats(assembly_graph_target, normalize_depth=True)
+
+        repeats_query = asg.get_repeats(assembly_graph_query)
+        repeats_target = asg.get_repeats(assembly_graph_target)
+
+        sequences_fasta_query = gfa_parser.extract_sequences_from_gfa(
+            gfa_file=gfa_query, out_dir=args.out_dir,
+            out_name="sequences_query.fasta")
+
+        sequences_fasta_target = gfa_parser.extract_sequences_from_gfa(
+            gfa_file=gfa_target, out_dir=args.out_dir,
+            out_name="sequences_target.fasta")
+
+        if args.input_query.endswith(".fasta"):
+            os.remove(gfa_query)
+
+        if args.input_target.endswith(".fasta"):
+            os.remove(gfa_target)
 
     print("Aligning sequences")
 
@@ -95,6 +130,9 @@ def main():
     out_gen.assembly_graph_save_dot(assembly_graph_target, "assembly_graph_target.gv", args.out_dir)
 
     out_gen.output_blocks_info(alignment_blocks_query, alignment_blocks_target, args.out_dir)
+
+    os.remove(sequences_fasta_query)
+    os.remove(sequences_fasta_target)
 
     print("Building alignment graphs")
 

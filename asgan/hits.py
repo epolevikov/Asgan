@@ -58,7 +58,8 @@ def process_raw_hits(raw_hits, repeats_query, repeats_target, args):
             if i != len(raw_hits) - 1 and hit.target_name != raw_hits[i + 1].target_name:
                 f.write("\n")
     '''
-
+    raw_hits = _filter_hits_by_len(raw_hits)
+    raw_hits = _filter_repeats(raw_hits, repeats_query, repeats_target)
     '''
     raw_hits.sort(key=lambda hit: (hit.query_name, hit.query_start))
 
@@ -77,14 +78,10 @@ def process_raw_hits(raw_hits, repeats_query, repeats_target, args):
             if i != len(raw_hits) - 1 and \
                hit.target_name != raw_hits[i + 1].target_name:
                 f.write("\n")
-    '''
 
     # raw_hits = _filter_hits_by_len(raw_hits)
     # raw_hits = _remove_repetitive_contigs(raw_hits, args)
-
-    raw_hits = _filter_hits_by_len(raw_hits)
-    raw_hits = _filter_repeats(raw_hits, repeats_query, repeats_target)
-
+    '''
     processed_hits = []
     for raw_hit in raw_hits:
         processed_hit = _process_raw_hit(raw_hit)

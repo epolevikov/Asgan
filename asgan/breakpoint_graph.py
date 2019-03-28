@@ -135,8 +135,8 @@ def unite_cycles(graph, unused_edges, args):
             unite_components(node_from, node_to)
             number_united_components += 1
 
-    with open("{}/united_components.txt".format(args.out_dir), "w") as f:
-        f.write("number united components: {}\n".format(number_united_components))
+    # with open("{}/united_components.txt".format(args.out_dir), "w") as f:
+    #    f.write("number united components: {}\n".format(number_united_components))
 
 
 def count_number_alignment_blocks(alignment_graph):

@@ -69,7 +69,8 @@ def reconstruct_full_paths(alignment_block_paths, alignment_graph, alignment_blo
     return full_paths
 
 
-def reconstruct_full_path_from_alignment_block_path(alignment_block_path, contracted_alignment_graph,
+def reconstruct_full_path_from_alignment_block_path(alignment_block_path,
+                                                    contracted_alignment_graph,
                                                     id2block, block2edge, edge2data):
     if len(alignment_block_path) == 1:
         return [id2block[alignment_block_path[0]]]

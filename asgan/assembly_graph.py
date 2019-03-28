@@ -36,7 +36,8 @@ def build_assembly_graph(raw_sequences, links):
         node_from = disjoint_set.find(2 * i)
         node_to = disjoint_set.find(2 * i + 1)
         assembly_graph.add_edge(node_from, node_to, name=seq.name,
-                                length=seq.length, depth=seq.depth)
+                                length=seq.length, depth=seq.depth,
+                                is_repeat=False)
 
     return assembly_graph
 
@@ -57,7 +58,7 @@ def mark_repeats(assembly_graph, normalize_depth=False):
         weighted_mean_depth = weighted_depths_sum / sum(lengths)
 
         for (_, _, data) in assembly_graph.edges(data=True):
-            is_repeat = (data["depth"] >= 1.5 * weighted_mean_depth or data["length"] < 50000)
+            is_repeat = (data["depth"] > 1.5 * weighted_mean_depth or data["length"] < 50000)
             data["is_repeat"] = is_repeat
 
 
