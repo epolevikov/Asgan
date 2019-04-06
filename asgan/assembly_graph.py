@@ -58,7 +58,7 @@ def mark_repeats(assembly_graph, normalize_depth=False):
         weighted_mean_depth = weighted_depths_sum / sum(lengths)
 
         for (_, _, data) in assembly_graph.edges(data=True):
-            is_repeat = (data["depth"] > 1.5 * weighted_mean_depth or data["length"] < 50000)
+            is_repeat = (data["depth"] > 2 * weighted_mean_depth or data["length"] < 50000)
             data["is_repeat"] = is_repeat
 
 

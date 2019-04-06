@@ -54,18 +54,20 @@ def align(contigs_query, contigs_target):
     with open(output_file) as f:
         raw_hits = [RawPafHit(raw_hit) for raw_hit in f]
 
-    os.remove(output_file)
+    # os.remove(output_file)
     return raw_hits
 
 
 def _run_minimap(contigs_query, contigs_target, outfile):
     MINIMAP_BIN = "lib/Flye/bin/flye-minimap2"
     cmd = [MINIMAP_BIN]
-    cmd.extend(["-secondary=no"])
+    cmd.extend(["--secondary=no"])
     cmd.extend(["-cx", "asm10"])
     cmd.extend([contigs_target, contigs_query])
     cmd.extend([">", outfile])
     cmd.extend(["2> /dev/null"])
     cmd = " ".join(cmd)
+
+    print(cmd)
 
     os.system(cmd)

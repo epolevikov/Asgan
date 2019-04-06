@@ -57,6 +57,30 @@ def group_by_sequence(alignment_blocks):
     return grouped_aln_blocks
 
 
+def build_from_sequences(assembly_graph, repeats):
+    sequences = []
+
+    for (_, _, data) in assembly_graph.edges(data=True):
+        if data["name"][:-1] not in repeats:
+            sequences.append((data["name"], data["length"]))
+
+    sequences.sort(key=lambda p: p[0])
+    alignment_blocks = dict()
+
+    block_id = 1
+    for i, (sequence_name, sequence_length) in enumerate(sequences):
+        block = AlignmentBlock(block_id, sequence_name, sequence_length,
+                               0, sequence_length)
+        alignment_blocks[sequence_name] = [block]
+
+        if (i + 1) % 2 == 1:
+            block_id = -block_id
+        else:
+            block_id = -block_id + 1
+
+    return alignment_blocks
+
+
 def set_block_attributes(paths):
     colors = ["green", "blue", "gold", "red", "purple", "darkorange",
               "hotpink", "khaki", "lightblue", "thistle", "tan"]
