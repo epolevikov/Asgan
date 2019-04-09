@@ -164,7 +164,7 @@ def save_full_paths(paths_query, paths_target, outdir):
             f.write("------------\n\n")
 
 
-def output_stats(stats, outdir):
+def output_stats(stats, link_types, outdir):
     min_length = 12
     with open("{}/stats.txt".format(outdir), "w") as f:
         f.write("\tQuery       \tTarget\n")
@@ -199,6 +199,8 @@ def output_stats(stats, outdir):
                                        pretty_number(stats["paths_n50_target"], min_length=min_length)))
         f.write("L50\t{}\t{}\n".format(pretty_number(stats["paths_l50_query"], min_length=min_length),
                                        pretty_number(stats["paths_l50_target"], min_length=min_length)))
+
+        f.write("Link types: {}".format(*link_types))
 
 
 def pretty_number(number, min_length=None, fill=" "):

@@ -26,6 +26,7 @@ def build_breakpoint_graph(alignment_graph_query, alignment_blocks_query,
     contracted_alignment_graph_target = build_contracted_alignment_graph(alignment_graph_target)
 
     signs = [("+", "+"), ("+", "-"), ("-", "+"), ("-", "-")]
+    link_types = [0, 0, 0, 0]
 
     for i in range(1, number_alignment_blocks // 2 + 1):
         for j in range(i, number_alignment_blocks // 2 + 1):
@@ -56,13 +57,32 @@ def build_breakpoint_graph(alignment_graph_query, alignment_blocks_query,
                                          block_from_inv, block_to_inv):
                     continue
 
+                link_type = get_link_type(block_from_fwd, block_to_fwd,
+                                          block2edge_query, block2edge_target)
+                link_types[link_type] += 1
+
                 label_from = "{}{}".format(i, ["t", "h"][sign1 == "+"])
                 label_to = "{}{}".format(j, ["h", "t"][sign2 == "+"])
                 node_from = label2node[label_from]
                 node_to = label2node[label_to]
                 breakpoint_graph.add_edge(node_from, node_to)
 
-    return breakpoint_graph
+    return breakpoint_graph, link_types
+
+
+def get_link_type(block_from, block_to, block2edge_query, block2edge_target):
+    link_types = [[0, 2], [1, 3]]
+
+    edge_from_query = block2edge_query[block_from]
+    edge_to_query = block2edge_query[block_to]
+
+    edge_from_target = block2edge_target[block_from]
+    edge_to_target = block2edge_target[block_to]
+
+    row = edge_from_query != edge_to_query
+    col = edge_from_target != edge_to_target
+
+    return link_types[row][col]
 
 
 def build_path_components(breakpoint_graph, max_matching):

@@ -64,7 +64,7 @@ def main():
 
     ''' The code below needs to be refactored since it is not the best way
         to process different input modes. But for now, it's ok. It will be
-        improved further.
+        improved later.
     '''
 
     if args.single_graph:
@@ -78,8 +78,8 @@ def main():
         alignment_blocks_query = alb.build_from_sequences(assembly_graph_query, repeats_query)
         alignment_graph_query = alg.build_alignment_graph(assembly_graph_query, alignment_blocks_query)
 
-        breakpoint_graph = bpg.build_breakpoint_graph(alignment_graph_query, alignment_blocks_query,
-                                                      alignment_graph_query, alignment_blocks_query)
+        breakpoint_graph, _ = bpg.build_breakpoint_graph(alignment_graph_query, alignment_blocks_query,
+                                                         alignment_graph_query, alignment_blocks_query)
 
         max_matching = nx.max_weight_matching(breakpoint_graph)
         out_gen.breakpoint_graph_save_dot(breakpoint_graph, max_matching, args.out_dir)
@@ -206,8 +206,8 @@ def main():
 
     print("Finding shared paths")
 
-    breakpoint_graph = bpg.build_breakpoint_graph(alignment_graph_query, alignment_blocks_query,
-                                                  alignment_graph_target, alignment_blocks_target)
+    breakpoint_graph, link_types = bpg.build_breakpoint_graph(alignment_graph_query, alignment_blocks_query,
+                                                              alignment_graph_target, alignment_blocks_target)
 
     max_matching = nx.max_weight_matching(breakpoint_graph)
 
@@ -243,7 +243,7 @@ def main():
                           assembly_graph_target, alignment_blocks_target, full_paths_target,
                           args.out_dir)
 
-    out_gen.output_stats(stats, args.out_dir)
+    out_gen.output_stats(stats, link_types, args.out_dir)
 
 
 if __name__ == "__main__":
