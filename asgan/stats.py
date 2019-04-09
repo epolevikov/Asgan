@@ -2,7 +2,8 @@ import networkx as nx
 
 
 def calc_stats(assembly_graph_query, alignment_blocks_query, full_paths_query,
-               assembly_graph_target, alignment_blocks_target, full_paths_target, outdir):
+               assembly_graph_target, alignment_blocks_target, full_paths_target,
+               alignment_block_paths, outdir):
     number_wcc_query = nx.number_weakly_connected_components(assembly_graph_query)
     number_wcc_target = nx.number_weakly_connected_components(assembly_graph_target)
 
@@ -43,7 +44,13 @@ def calc_stats(assembly_graph_query, alignment_blocks_query, full_paths_query,
     paths_n50_query, paths_l50_query = calc_nx(path_lengths_query)
     paths_n50_target, paths_l50_target = calc_nx(path_lengths_target)
 
+    # link types:
+
+    link_types = calc_link_types(alignment_block_paths, alignment_blocks_query, alignment_blocks_target)
+
     stats = dict()
+
+    stats["link_types"] = link_types
 
     stats["number_wcc_query"] = number_wcc_query
     stats["number_wcc_target"] = number_wcc_target
@@ -74,6 +81,49 @@ def calc_stats(assembly_graph_query, alignment_blocks_query, full_paths_query,
     stats["paths_total_length_target"] = paths_total_length_target
 
     return stats
+
+
+def calc_link_types(alignment_block_paths, alignment_blocks_query, alignment_blocks_target):
+    def get_link_type(block_from, block_to, id2block_query, id2block_target):
+        link_types = [[0, 2], [1, 3]]
+
+        seq_from_query = id2block_query[block_from].seq_name
+        seq_to_query = id2block_query[block_to].seq_name
+
+        seq_from_target = id2block_target[block_from].seq_name
+        seq_to_target = id2block_target[block_to].seq_name
+
+        row = seq_from_query != seq_to_query
+        col = seq_from_target != seq_to_target
+
+        # print(block_from, block_to)
+        # print(seq_from_query, seq_to_query)
+        # print(seq_from_target, seq_to_target)
+
+        return link_types[row][col]
+
+    id2block_query = build_id2block_dict(alignment_blocks_query)
+    id2block_target = build_id2block_dict(alignment_blocks_target)
+    link_types = [0, 0, 0, 0]
+
+    for path in alignment_block_paths:
+        if len(path[0]) > 1:
+            for i in range(len(path[0]) - 1):
+                block_from, block_to = path[0][i], path[0][i + 1]
+                link_type = get_link_type(block_from, block_to, id2block_query, id2block_target)
+                link_types[link_type] += 1
+
+    return link_types
+
+
+def build_id2block_dict(alignment_blocks):
+    id2block = dict()
+
+    for blocks in alignment_blocks.values():
+        for block in blocks:
+            id2block[block.signed_id()] = block
+
+    return id2block
 
 
 def filter_complement(lengths):

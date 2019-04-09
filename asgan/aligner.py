@@ -54,7 +54,7 @@ def align(contigs_query, contigs_target):
     with open(output_file) as f:
         raw_hits = [RawPafHit(raw_hit) for raw_hit in f]
 
-    # os.remove(output_file)
+    os.remove(output_file)
     return raw_hits
 
 
