@@ -114,11 +114,13 @@ def main():
 
         return
     elif args.ref:
-        #gfa_query = args.input_query
+        gfa_query = args.input_query
+        '''
         gfa_query = gfa_parser.build_gfa_from_fasta(
             sequences_fasta=args.input_query,
             out_dir=args.out_dir,
             out_name="graph_query.gfa")
+        '''
         gfa_target = gfa_parser.build_gfa_from_fasta(
             sequences_fasta=args.input_target,
             out_dir=args.out_dir,
@@ -129,17 +131,17 @@ def main():
         assembly_graph_query = build_assembly_graph_from_gfa(gfa_query)
         assembly_graph_target = build_assembly_graph_from_gfa(gfa_target)
 
-        #asg.mark_repeats(assembly_graph_query, normalize_depth=True)
+        asg.mark_repeats(assembly_graph_query, normalize_depth=True)
 
-        #repeats_query = asg.get_repeats(assembly_graph_query)
-        repeats_query = set()
+        repeats_query = asg.get_repeats(assembly_graph_query)
+        # repeats_query = set()
         repeats_target = set()
 
-        #sequences_fasta_query = gfa_parser.extract_sequences_from_gfa(
-        #    gfa_file=gfa_query, out_dir=args.out_dir,
-        #    out_name="sequences_query.fasta")
+        sequences_fasta_query = gfa_parser.extract_sequences_from_gfa(
+            gfa_file=gfa_query, out_dir=args.out_dir,
+            out_name="sequences_query.fasta")
 
-        sequences_fasta_query = args.input_query
+        # sequences_fasta_query = args.input_query
         sequences_fasta_target = args.input_target
 
         #if args.input_query.endswith(".fasta"):

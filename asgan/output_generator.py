@@ -171,7 +171,7 @@ def output_stats(stats, outdir):
         f.write("CC\t{}\t{}\n\n".format(pretty_number(stats["number_wcc_query"], min_length=min_length),
                                         pretty_number(stats["number_wcc_target"], min_length=min_length)))
 
-        f.write("Contigs\t{}\t{}\n".format(pretty_number(stats["number_contigs_query"], min_length=min_length),
+        f.write("contigs\t{}\t{}\n".format(pretty_number(stats["number_contigs_query"], min_length=min_length),
                                            pretty_number(stats["number_contigs_target"], min_length=min_length)))
         f.write("tlen\t{}\t{}\n".format(pretty_number(stats["contigs_total_length_query"], min_length=min_length),
                                         pretty_number(stats["contigs_total_length_target"], min_length=min_length)))
@@ -180,7 +180,7 @@ def output_stats(stats, outdir):
         f.write("L50\t{}\t{}\n\n".format(pretty_number(stats["contigs_l50_query"], min_length=min_length),
                                          pretty_number(stats["contigs_l50_target"], min_length=min_length)))
 
-        f.write("Blocks\t{}\t{}\n".format(pretty_number(stats["number_alignment_blocks"], min_length=min_length),
+        f.write("blocks\t{}\t{}\n".format(pretty_number(stats["number_alignment_blocks"], min_length=min_length),
                                           pretty_number(stats["number_alignment_blocks"], min_length=min_length)))
         f.write("tlen\t{}\t{}\n".format(pretty_number(stats["alignment_blocks_total_length_query"],
                                                       min_length=min_length),
@@ -191,8 +191,17 @@ def output_stats(stats, outdir):
         f.write("L50\t{}\t{}\n\n".format(pretty_number(stats["alignment_blocks_l50_query"], min_length=min_length),
                                          pretty_number(stats["alignment_blocks_l50_target"], min_length=min_length)))
 
-        f.write("Paths\t{}\t{}\n".format(pretty_number(stats["number_paths"], min_length=min_length),
-                                         pretty_number(stats["number_paths"], min_length=min_length)))
+        f.write("s-paths\t{}\t{}\n".format(pretty_number(stats["number_single_paths_query"], min_length=min_length),
+                                           pretty_number(stats["number_single_paths_target"], min_length=min_length)))
+        f.write("tlen\t{}\t{}\n".format(pretty_number(stats["single_paths_total_length_query"], min_length=min_length),
+                                        pretty_number(stats["single_paths_total_length_target"], min_length=min_length)))
+        f.write("N50\t{}\t{}\n".format(pretty_number(stats["single_paths_n50_query"], min_length=min_length),
+                                       pretty_number(stats["single_paths_n50_target"], min_length=min_length)))
+        f.write("L50\t{}\t{}\n\n".format(pretty_number(stats["single_paths_l50_query"], min_length=min_length),
+                                         pretty_number(stats["single_paths_l50_target"], min_length=min_length)))
+
+        f.write("u-paths\t{}\t{}\n".format(pretty_number(stats["number_paths"], min_length=min_length),
+                                           pretty_number(stats["number_paths"], min_length=min_length)))
         f.write("tlen\t{}\t{}\n".format(pretty_number(stats["paths_total_length_query"], min_length=min_length),
                                         pretty_number(stats["paths_total_length_target"], min_length=min_length)))
         f.write("N50\t{}\t{}\n".format(pretty_number(stats["paths_n50_query"], min_length=min_length),
@@ -200,7 +209,8 @@ def output_stats(stats, outdir):
         f.write("L50\t{}\t{}\n".format(pretty_number(stats["paths_l50_query"], min_length=min_length),
                                        pretty_number(stats["paths_l50_target"], min_length=min_length)))
 
-        f.write("Link types: {}".format(stats["link_types"]))
+
+        f.write("\nlink types: {} {} {} {}".format(*stats["link_types"]))
 
 
 def pretty_number(number, min_length=None, fill=" "):

@@ -32,7 +32,7 @@ def calc_stats(assembly_graph_query, alignment_blocks_query, full_paths_query,
     alignment_blocks_n50_query, alignment_blocks_l50_query = calc_nx(alignment_block_lengths_query)
     alignment_blocks_n50_target, alignment_blocks_l50_target = calc_nx(alignment_block_lengths_target)
 
-    # paths
+    # u-paths
     path_lengths_query = get_path_lengths(full_paths_query)
     path_lengths_target = get_path_lengths(full_paths_target)
 
@@ -43,6 +43,20 @@ def calc_stats(assembly_graph_query, alignment_blocks_query, full_paths_query,
 
     paths_n50_query, paths_l50_query = calc_nx(path_lengths_query)
     paths_n50_target, paths_l50_target = calc_nx(path_lengths_target)
+
+    # s-paths:
+
+    single_path_lengths_query = get_single_path_lengths(alignment_blocks_query)
+    single_path_lengths_target = get_single_path_lengths(alignment_blocks_target)
+
+    single_paths_total_length_query = sum(single_path_lengths_query)
+    single_paths_total_length_target = sum(single_path_lengths_target)
+
+    number_single_paths_query = len(single_path_lengths_query)
+    number_single_paths_target = len(single_path_lengths_target)
+
+    single_paths_n50_query, single_paths_l50_query = calc_nx(single_path_lengths_query)
+    single_paths_n50_target, single_paths_l50_target = calc_nx(single_path_lengths_target)
 
     # link types:
 
@@ -80,7 +94,34 @@ def calc_stats(assembly_graph_query, alignment_blocks_query, full_paths_query,
     stats["paths_total_length_query"] = paths_total_length_query
     stats["paths_total_length_target"] = paths_total_length_target
 
+    stats["number_single_paths_query"] = number_single_paths_query
+    stats["number_single_paths_target"] = number_single_paths_target
+    stats["single_paths_n50_query"] = single_paths_n50_query
+    stats["single_paths_n50_target"] = single_paths_n50_target
+    stats["single_paths_l50_query"] = single_paths_l50_query
+    stats["single_paths_l50_target"] = single_paths_l50_target
+    stats["single_paths_total_length_query"] = single_paths_total_length_query
+    stats["single_paths_total_length_target"] = single_paths_total_length_target
+
     return stats
+
+
+def get_single_path_lengths(alignment_blocks):
+    def calc_single_path_length(blocks):
+        path_length = sum([block.length() for block in blocks])
+
+        blocks.sort(key=lambda block: block.start)
+        for i in range(len(blocks) - 1):
+            path_length += blocks[i + 1].start - blocks[i].end
+
+        return path_length
+
+    path_lengths = []
+
+    for sequence, blocks in alignment_blocks.items():
+        path_lengths.append(calc_single_path_length(blocks))
+
+    return filter_complement(path_lengths)
 
 
 def calc_link_types(alignment_block_paths, alignment_blocks_query, alignment_blocks_target):
