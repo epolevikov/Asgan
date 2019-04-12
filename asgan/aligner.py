@@ -24,10 +24,10 @@ class RawPafHit:
     def target_hit_length(self):
         return self.target_end - self.target_start
 
-    def query_mapping_rate(self):
+    def query_alignment_rate(self):
         return self.query_hit_length() / self.query_len
 
-    def target_mapping_rate(self):
+    def target_alignment_rate(self):
         return self.target_hit_length() / self.target_len
 
     def __str__(self):
@@ -46,28 +46,27 @@ class RawPafHit:
         return "{}\t{}\t{}".format(query_info, self.strand, target_info)
 
 
-def align(contigs_query, contigs_target):
-    output_file = "minimap.paf"
+def align(sequences_query, sequences_target):
+    out_file = "minimap.paf"
 
-    _run_minimap(contigs_query, contigs_target, output_file)
+    _run_minimap(sequences_query, sequences_target, out_file)
 
-    with open(output_file) as f:
+    with open(out_file) as f:
         raw_hits = [RawPafHit(raw_hit) for raw_hit in f]
 
-    os.remove(output_file)
+    os.remove(out_file)
     return raw_hits
 
 
-def _run_minimap(contigs_query, contigs_target, outfile):
+def _run_minimap(sequences_query, sequences_target, out_file):
     MINIMAP_BIN = "lib/Flye/bin/flye-minimap2"
+
     cmd = [MINIMAP_BIN]
     cmd.extend(["--secondary=no"])
     cmd.extend(["-cx", "asm10"])
-    cmd.extend([contigs_target, contigs_query])
-    cmd.extend([">", outfile])
+    cmd.extend([sequences_target, sequences_query])
+    cmd.extend([">", out_file])
     cmd.extend(["2> /dev/null"])
     cmd = " ".join(cmd)
-
-    print(cmd)
 
     os.system(cmd)

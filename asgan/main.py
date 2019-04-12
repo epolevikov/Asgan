@@ -4,11 +4,10 @@ import argparse
 import asgan.stats as st
 import asgan.paths as ps
 import asgan.hits as hits
-import asgan.flye_repeat as fr
 import asgan.aligner as aligner
 import asgan.assembly_graph as asg
-import asgan.alignment_graph as alg
-import asgan.alignment_blocks as alb
+import asgan.adjacency_graph as adg
+import asgan.synteny_blocks as sb
 import asgan.breakpoint_graph as bpg
 import asgan.gfa_parser as gfa_parser
 import asgan.output_generator as out_gen
@@ -16,6 +15,104 @@ import asgan.output_generator as out_gen
 import networkx as nx
 
 
+def parse_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--input-query")
+    parser.add_argument("--input-target")
+    parser.add_argument("--out-dir")
+    return parser.parse_args()
+
+
+def build_assembly_graph(gfa_file):
+    sequences, links = gfa_parser.parse_gfa(gfa_file)
+    return asg.build_assembly_graph(sequences, links)
+
+
+def extract_synteny_blocks(hits):
+    synteny_blocks_query, synteny_blocks_target = sb.extract_synteny_blocks(hits)
+    synteny_blocks_query = sb.group_by_sequence(synteny_blocks_query)
+    synteny_blocks_target = sb.group_by_sequence(synteny_blocks_target)
+    return synteny_blocks_query, synteny_blocks_target
+
+
+def main():
+    args = parse_args()
+    os.mkdir(args.out_dir)
+
+    gfa_query, gfa_target = args.input_query, args.input_target
+
+    assembly_graph_query = build_assembly_graph(gfa_query)
+    assembly_graph_target = build_assembly_graph(gfa_target)
+
+    '''
+    out_gen.assembly_graph_save_dot(graph=assembly_graph_query,
+                                    out_file="assembly_graph_query.gv",
+                                    out_dir=args.out_dir)
+    out_gen.assembly_graph_save_dot(graph=assembly_graph_target,
+                                    out_file="assembly_graph_target.gv",
+                                    out_dir=args.out_dir)
+    '''
+
+    sequences_query = gfa_parser.extract_sequences(gfa_query, out_dir=args.out_dir,
+                                                   out_file="sequences_query.fasta")
+    sequences_target = gfa_parser.extract_sequences(gfa_target, out_dir=args.out_dir,
+                                                    out_file="sequences_target.fasta")
+
+    raw_hits = aligner.align(sequences_query, sequences_target)
+    # out_gen.save_raw_hits(raw_hits, out_dir=args.out_dir, out_file="raw_hits.txt")
+
+    processed_hits = hits.process_raw_hits(raw_hits)
+    synteny_blocks_query, synteny_blocks_target = extract_synteny_blocks(processed_hits)
+
+    '''
+    out_gen.output_blocks_info(synteny_blocks_query, synteny_blocks_target,
+                               out_dir=args.out_dir, out_file="synteny_blocks.txt")
+    '''
+
+    adjacency_graph_query = adg.build_adjacency_graph(assembly_graph_query, synteny_blocks_query)
+    adjacency_graph_target = adg.build_adjacency_graph(assembly_graph_target, synteny_blocks_target)
+
+    breakpoint_graph = bpg.build_breakpoint_graph(adjacency_graph_query, synteny_blocks_query,
+                                                  adjacency_graph_target, synteny_blocks_target)
+
+    max_matching = nx.max_weight_matching(breakpoint_graph)
+
+    path_components = bpg.build_path_components(breakpoint_graph, max_matching)
+    unused_edges = bpg.get_unused_edges(breakpoint_graph, max_matching)
+    number_united_components = bpg.unite_cycles(path_components, unused_edges)
+
+    synteny_paths = ps.build_synteny_paths(path_components)
+
+    block_attributes = sb.set_block_attributes(synteny_paths)
+    out_gen.adjacency_graph_save_dot(adjacency_graph_query, out_dir=args.out_dir,
+                                     block_attributes=block_attributes,
+                                     out_file="adjacency_graph_query.gv")
+    out_gen.adjacency_graph_save_dot(adjacency_graph_target, out_dir=args.out_dir,
+                                     block_attributes=block_attributes,
+                                     out_file="adjacency_graph_target.gv")
+
+    path_sequences_query = ps.build_path_sequences(synteny_blocks_query, synteny_paths,
+                                                   adjacency_graph_query)
+    path_sequences_target = ps.build_path_sequences(synteny_blocks_target, synteny_paths,
+                                                    adjacency_graph_target)
+
+    out_gen.save_path_sequences(path_sequences_query, path_sequences_target, out_dir=args.out_dir)
+
+    stats = st.calc_stats(assembly_graph_query, synteny_blocks_query, path_sequences_query,
+                          assembly_graph_target, synteny_blocks_target, path_sequences_target,
+                          synteny_paths, number_united_components, args.out_dir)
+
+    out_gen.output_stats(stats, out_dir=args.out_dir)
+
+    os.remove(sequences_query)
+    os.remove(sequences_target)
+
+
+if __name__ == "__main__":
+    main()
+
+
+'''
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("--input-query")
@@ -61,11 +158,6 @@ def extract_alignment_blocks_from_hits(hits):
 def main():
     args = parse_args()
     os.mkdir(args.out_dir)
-
-    ''' The code below needs to be refactored since it is not the best way
-        to process different input modes. But for now, it's ok. It will be
-        improved later.
-    '''
 
     if args.single_graph:
         gfa_query = args.input_query
@@ -115,12 +207,12 @@ def main():
         return
     elif args.ref:
         gfa_query = args.input_query
-        '''
+
         gfa_query = gfa_parser.build_gfa_from_fasta(
             sequences_fasta=args.input_query,
             out_dir=args.out_dir,
             out_name="graph_query.gfa")
-        '''
+
         gfa_target = gfa_parser.build_gfa_from_fasta(
             sequences_fasta=args.input_target,
             out_dir=args.out_dir,
@@ -250,3 +342,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+'''

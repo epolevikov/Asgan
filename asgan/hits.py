@@ -40,7 +40,7 @@ class PafHit:
         return query_info + target_info
 
 
-def process_raw_hits(raw_hits, repeats_query, repeats_target, args):
+def process_raw_hits(raw_hits):
     '''
     raw_hits.sort(key=lambda hit: (hit.query_name, hit.query_start))
 
@@ -58,8 +58,7 @@ def process_raw_hits(raw_hits, repeats_query, repeats_target, args):
             if i != len(raw_hits) - 1 and hit.target_name != raw_hits[i + 1].target_name:
                 f.write("\n")
     '''
-    raw_hits = _filter_hits_by_len(raw_hits)
-    raw_hits = _filter_repeats(raw_hits, repeats_query, repeats_target)
+    # raw_hits = _filter_repeats(raw_hits, repeats_query, repeats_target)
     '''
     raw_hits.sort(key=lambda hit: (hit.query_name, hit.query_start))
 
@@ -82,6 +81,9 @@ def process_raw_hits(raw_hits, repeats_query, repeats_target, args):
     # raw_hits = _filter_hits_by_len(raw_hits)
     # raw_hits = _remove_repetitive_contigs(raw_hits, args)
     '''
+
+    raw_hits = _filter_hits_by_len(raw_hits)
+
     processed_hits = []
     for raw_hit in raw_hits:
         processed_hit = _process_raw_hit(raw_hit)
@@ -113,78 +115,6 @@ def _filter_hits_by_len(raw_hits, min_hit_length=50000):
         filtered_hits.append(raw_hit)
 
     return filtered_hits
-
-
-def _filter_repeats(raw_hits, repeats_query, repeats_target):
-    filtered_hits = []
-
-    for hit in raw_hits:
-        if hit.query_name in repeats_query:
-            continue
-
-        if hit.target_name in repeats_target:
-            continue
-
-        filtered_hits.append(hit)
-
-    return filtered_hits
-
-
-'''
-def _remove_repetitive_contigs(raw_hits, args):
-    repetitive_contigs = set()
-
-    raw_hits.sort(key=lambda hit: (hit.query_name))
-
-    for i in range(len(raw_hits) - 1):
-        curr_hit = raw_hits[i]
-        curr_hit_contigs = set()
-
-        if curr_hit.query_mapping_rate() > 0.5:
-            curr_hit_contigs.add(curr_hit.target_name)
-
-        for j in range(i + 1, len(raw_hits)):
-            next_hit = raw_hits[j]
-
-            if next_hit.query_name != curr_hit.query_name:
-                break
-
-            if next_hit.query_mapping_rate() > 0.5:
-                curr_hit_contigs.add(next_hit.target_name)
-
-        if len(curr_hit_contigs) > 1:
-            repetitive_contigs.add(curr_hit.query_name)
-
-    raw_hits.sort(key=lambda hit: (hit.target_name))
-
-    for i in range(len(raw_hits) - 1):
-        curr_hit = raw_hits[i]
-        curr_hit_contigs = set()
-
-        if curr_hit.target_mapping_rate() > 0.5:
-            curr_hit_contigs.add(curr_hit.query_name)
-
-        for j in range(i + 1, len(raw_hits)):
-            next_hit = raw_hits[j]
-
-            if next_hit.target_name != curr_hit.target_name:
-                break
-
-            if next_hit.target_mapping_rate() > 0.5:
-                curr_hit_contigs.add(next_hit.query_name)
-
-        if len(curr_hit_contigs) > 1:
-            repetitive_contigs.add(curr_hit.target_name)
-
-    # with open("{}/repetitive_contigs.txt".format(args.out_dir), "w") as f:
-    #    f.write(str(repetitive_contigs))
-
-    unique_hits = [hit for hit in raw_hits
-                   if hit.query_name not in repetitive_contigs
-                   and hit.target_name not in repetitive_contigs]
-
-    return unique_hits
-'''
 
 
 def _process_raw_hit(raw_hit):
@@ -251,3 +181,75 @@ def _complement_hit(hit):
 
     complement_hit.id = -hit.id
     return complement_hit
+
+
+'''
+def _filter_repeats(raw_hits, repeats_query, repeats_target):
+    filtered_hits = []
+
+    for hit in raw_hits:
+        if hit.query_name in repeats_query:
+            continue
+
+        if hit.target_name in repeats_target:
+            continue
+
+        filtered_hits.append(hit)
+
+    return filtered_hits
+
+
+def _remove_repetitive_contigs(raw_hits, args):
+    repetitive_contigs = set()
+
+    raw_hits.sort(key=lambda hit: (hit.query_name))
+
+    for i in range(len(raw_hits) - 1):
+        curr_hit = raw_hits[i]
+        curr_hit_contigs = set()
+
+        if curr_hit.query_mapping_rate() > 0.5:
+            curr_hit_contigs.add(curr_hit.target_name)
+
+        for j in range(i + 1, len(raw_hits)):
+            next_hit = raw_hits[j]
+
+            if next_hit.query_name != curr_hit.query_name:
+                break
+
+            if next_hit.query_mapping_rate() > 0.5:
+                curr_hit_contigs.add(next_hit.target_name)
+
+        if len(curr_hit_contigs) > 1:
+            repetitive_contigs.add(curr_hit.query_name)
+
+    raw_hits.sort(key=lambda hit: (hit.target_name))
+
+    for i in range(len(raw_hits) - 1):
+        curr_hit = raw_hits[i]
+        curr_hit_contigs = set()
+
+        if curr_hit.target_mapping_rate() > 0.5:
+            curr_hit_contigs.add(curr_hit.query_name)
+
+        for j in range(i + 1, len(raw_hits)):
+            next_hit = raw_hits[j]
+
+            if next_hit.target_name != curr_hit.target_name:
+                break
+
+            if next_hit.target_mapping_rate() > 0.5:
+                curr_hit_contigs.add(next_hit.query_name)
+
+        if len(curr_hit_contigs) > 1:
+            repetitive_contigs.add(curr_hit.target_name)
+
+    # with open("{}/repetitive_contigs.txt".format(args.out_dir), "w") as f:
+    #    f.write(str(repetitive_contigs))
+
+    unique_hits = [hit for hit in raw_hits
+                   if hit.query_name not in repetitive_contigs
+                   and hit.target_name not in repetitive_contigs]
+
+    return unique_hits
+'''

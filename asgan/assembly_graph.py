@@ -42,6 +42,7 @@ def build_assembly_graph(raw_sequences, links):
     return assembly_graph
 
 
+'''
 def mark_repeats(assembly_graph, normalize_depth=False):
     if not normalize_depth:
         for (_, _, data) in assembly_graph.edges(data=True):
@@ -76,3 +77,4 @@ def get_repeats(assembly_graph):
             repeats.add(data["name"][:-1])
 
     return repeats
+'''
