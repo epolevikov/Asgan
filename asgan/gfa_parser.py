@@ -1,7 +1,7 @@
 from collections import namedtuple
 
 Link = namedtuple("Link", ["from_name", "from_strand", "to_name", "to_strand"])
-Sequence = namedtuple("Sequence", ["name", "length", "seq", "depth"])
+Sequence = namedtuple("Sequence", ["name", "length", "seq", "is_repeat"])
 
 
 class RecordType:
@@ -47,9 +47,12 @@ def _parse_sequence(record):
     name = record[1]
     seq = record[2]
     length = len(seq)
-    depth = 0  # int(record[3].split(":")[-1])
+    is_repeat = False
 
-    return Sequence(name, length, seq, depth)
+    if len(record) > 3 and record[3].startswith("r"):
+        is_repeat = (int(record[3].split(":")[-1]) == 1)
+
+    return Sequence(name, length, seq, is_repeat)
 
 
 def _parse_link(record):
@@ -67,37 +70,3 @@ def _inv_link(link):
     to_strand = inv_strand(link.from_strand)
 
     return Link(from_name, from_strand, to_name, to_strand)
-
-
-'''
-def build_gfa_from_fasta(sequences_fasta, out_dir, out_name):
-    outfile = "{}/{}".format(out_dir, out_name)
-
-    with open(sequences_fasta) as fin, open(outfile, "w") as fout:
-        fout.write("H\tVN:Z:1.0\n")
-        for header, seq in read_fasta(fin):
-            fout.write("S\t{}\t*\tLN:i:{}\n".format(header, len(seq)))
-
-    return outfile
-
-
-def read_fasta(filename):
-    header = None
-    seq = []
-
-    for line in filename:
-        line = line.strip()
-        if not line:
-            continue
-
-        if line.startswith(">"):
-            if header:
-                yield header, "".join(seq)
-                seq = []
-            header = line[1:].split(" ")[0]
-        else:
-            seq.append(line)
-
-    if header and len(seq):
-        yield header, "".join(seq)
-'''

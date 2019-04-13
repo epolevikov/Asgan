@@ -1,24 +1,30 @@
 import networkx as nx
 from asgan.utils import DisjointSet
+from asgan.gfa_parser import parse_gfa
+
+
+def build_assembly_graph(gfa_file):
+    sequences, links = parse_gfa(gfa_file)
+    return build(sequences, links)
 
 
 class Sequence:
-    def __init__(self, name, length, strand, depth):
+    def __init__(self, name, length, strand, is_repeat):
         self.name = name + strand
         self.length = length
-        self.depth = depth
+        self.is_repeat = is_repeat
 
 
-def build_assembly_graph(raw_sequences, links):
+def build(raw_sequences, links):
     sequences = list()
     sequence2id = dict()
     curr_id = 0
 
     for seq in raw_sequences:
-        sequences.append(Sequence(seq.name, seq.length, "+", seq.depth))
+        sequences.append(Sequence(seq.name, seq.length, "+", seq.is_repeat))
         sequence2id[seq.name + "+"] = curr_id
 
-        sequences.append(Sequence(seq.name, seq.length, "-", seq.depth))
+        sequences.append(Sequence(seq.name, seq.length, "-", seq.is_repeat))
         sequence2id[seq.name + "-"] = curr_id + 1
 
         curr_id += 2
@@ -36,37 +42,10 @@ def build_assembly_graph(raw_sequences, links):
         node_from = disjoint_set.find(2 * i)
         node_to = disjoint_set.find(2 * i + 1)
         assembly_graph.add_edge(node_from, node_to, name=seq.name,
-                                length=seq.length, depth=seq.depth,
-                                is_repeat=False)
+                                length=seq.length,
+                                is_repeat=seq.is_repeat)
 
     return assembly_graph
-
-
-'''
-def mark_repeats(assembly_graph, normalize_depth=False):
-    if not normalize_depth:
-        for (_, _, data) in assembly_graph.edges(data=True):
-            is_repeat = (data["depth"] > 1 or data["length"] < 50000)
-            data["is_repeat"] = is_repeat
-    else:
-        depths, lengths = [], []
-
-        for (_, _, data) in assembly_graph.edges(data=True):
-            depths.append(data["depth"])
-            lengths.append(data["length"])
-
-        weighted_depths_sum = sum([depths[i] * lengths[i] for i in range(len(depths))])
-        weighted_mean_depth = weighted_depths_sum / sum(lengths)
-
-        for (_, _, data) in assembly_graph.edges(data=True):
-            is_repeat = (data["depth"] > 2 * weighted_mean_depth or data["length"] < 50000)
-            data["is_repeat"] = is_repeat
-
-
-def mark_sequences_without_alignment_blocks(assembly_graph, alignment_blocks):
-    for (_, _, data) in assembly_graph.edges(data=True):
-        if data["name"] not in alignment_blocks:
-            data["is_repeat"] = True
 
 
 def get_repeats(assembly_graph):
@@ -77,4 +56,3 @@ def get_repeats(assembly_graph):
             repeats.add(data["name"][:-1])
 
     return repeats
-'''

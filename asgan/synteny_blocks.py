@@ -1,7 +1,7 @@
 from asgan.output_generator import pretty_number
 
 
-class SyntenyBlock:
+class SequenceBlock:
     def __init__(self, id, sequence_name, sequence_length, start, end):
         self.id = id
         self.sequence_name = sequence_name
@@ -12,19 +12,23 @@ class SyntenyBlock:
     def signed_id(self):
         return ["-", "+"][self.id > 0] + str(abs(self.id))
 
-    def start_gap_length(self):
-        return self.start
-
-    def end_gap_length(self):
-        return self.seq_length - self.end
-
     def length(self):
-        return self.end - self.start + 1
+        return self.end - self.start
 
     def __str__(self):
-        return "{}\t{}\t{}".format(self.signed_id(),
-                                   pretty_number(self.start),
-                                   pretty_number(self.end))
+        name = self.sequence_name
+        start = pretty_number(self.start)
+        end = pretty_number(self.end)
+        id = "-"
+
+        if self.id is not None:
+            id = self.signed_id()
+
+        return "{}\t{}\t{}\t{}".format(name, start, end, id)
+
+
+class SyntenyBlock(SequenceBlock):
+    pass
 
 
 def extract_synteny_blocks(hits):
@@ -41,7 +45,8 @@ def extract_synteny_blocks(hits):
         synteny_blocks_query.append(synteny_block_query)
         synteny_blocks_target.append(synteny_block_target)
 
-    return synteny_blocks_query, synteny_blocks_target
+    return (group_by_sequence(synteny_blocks_query),
+            group_by_sequence(synteny_blocks_target))
 
 
 def group_by_sequence(synteny_blocks):
@@ -90,29 +95,3 @@ def set_block_attributes(paths):
 
 def inv_block(block_id):
     return ["+", "-"][block_id[0] == "+"] + block_id[1:]
-
-
-'''
-def build_from_sequences(assembly_graph, repeats):
-    sequences = []
-
-    for (_, _, data) in assembly_graph.edges(data=True):
-        if data["name"][:-1] not in repeats:
-            sequences.append((data["name"], data["length"]))
-
-    sequences.sort(key=lambda p: p[0])
-    alignment_blocks = dict()
-
-    block_id = 1
-    for i, (sequence_name, sequence_length) in enumerate(sequences):
-        block = AlignmentBlock(block_id, sequence_name, sequence_length,
-                               0, sequence_length)
-        alignment_blocks[sequence_name] = [block]
-
-        if (i + 1) % 2 == 1:
-            block_id = -block_id
-        else:
-            block_id = -block_id + 1
-
-    return alignment_blocks
-'''

@@ -80,6 +80,7 @@ def calc_stats(assembly_graph_query, synteny_blocks_query, path_sequences_query,
     stats["paths_total_length_target"] = paths_total_length_target
 
     stats["link_types"] = link_types
+    stats["number_united_components"] = number_united_components
 
     return stats
 
@@ -105,7 +106,7 @@ def calc_link_types(synteny_paths, synteny_blocks_query, synteny_blocks_target):
 
     for path in synteny_paths:
         if len(path) > 1:
-            for i in range(len(path[0]) - 1):
+            for i in range(len(path) - 1):
                 block_from, block_to = path[i], path[i + 1]
                 link_type = get_link_type(block_from, block_to,
                                           id2block_query, id2block_target)
@@ -146,13 +147,7 @@ def calc_path_lengths(paths):
 
 
 def calc_path_length(path):
-    path_length = 0
-
-    for i in range(len(path)):
-        if i % 2 == 0:
-            path_length += path[i].length()
-        else:
-            path_length += sum([sequence_length for _, sequence_length in path[i]])
+    path_length = sum([block.length() for block in path])
 
     if len(path) > 1 and path[0].signed_id() == path[-1].signed_id():
         path_length -= path[0].length()
