@@ -98,7 +98,7 @@ def build_path_between_blocks(block_from, block_to,
     if from_end == to_start:
         dist = contracted_adjacency_graph.nodes[from_end].get("distance")
 
-        if dist is None:
+        if dist is None or block_from.sequence_name != block_to.sequence_name:
             block1 = SequenceBlock(id=None, sequence_name=block_from.sequence_name,
                                    sequence_length=block_from.sequence_length,
                                    start=block_from.end, end=block_from.sequence_length)
