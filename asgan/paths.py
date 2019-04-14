@@ -111,7 +111,10 @@ def build_path_between_blocks(block_from, block_to,
         else:
             block = SequenceBlock(id=None, sequence_name=block_from.sequence_name,
                                   sequence_length=block_from.sequence_length,
-                                  start=block_from.end, end=block_to.start)
+                                  start=block_from.end,
+                                  end=block_to.start
+                                  if block_to.start > block_from.end
+                                  else block_to.sequence_length)  # in case of circular sequence
 
             return [block]
 
