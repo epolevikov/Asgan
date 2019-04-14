@@ -25,7 +25,7 @@ def build_synteny_paths(path_components):
                 if node_from_label[:-1] != node_to_label[:-1]:
                     component.remove_edge(node_from, node_to)
                     path = list(nx.dfs_preorder_nodes(component, node_from))
-                    path.append(node_from)
+                    # path.append(node_from)
                     break
 
         paths.append(path)
@@ -111,10 +111,7 @@ def build_path_between_blocks(block_from, block_to,
         else:
             block = SequenceBlock(id=None, sequence_name=block_from.sequence_name,
                                   sequence_length=block_from.sequence_length,
-                                  start=block_from.end,
-                                  end=block_to.start
-                                  if block_to.start > block_from.end
-                                  else block_to.sequence_length)  # in case of circular sequence
+                                  start=block_from.end, end=block_to.start)
 
             return [block]
 
