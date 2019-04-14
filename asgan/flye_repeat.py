@@ -1,3 +1,4 @@
+'''
 import os
 
 
@@ -13,3 +14,4 @@ def run_flye_repeat(sequences_fasta, out_dir, out_name):
     os.system("mv {0}/assembly_graph.gfa {0}/{1}".format(out_dir, out_name))
 
     return "{}/{}".format(out_dir, out_name)
+'''

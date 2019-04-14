@@ -100,6 +100,12 @@ def main():
     out_gen.save_path_sequences(path_sequences_query, path_sequences_target,
                                 out_dir=args.out_dir)
 
+    '''
+    out_gen.path_sequences_save_fasta(path_sequences_query, sequences_query,
+                                      path_sequences_target, sequences_target,
+                                      args.out_dir)
+    '''
+
     out_gen.output_stats(stats, out_dir=args.out_dir)
 
     os.remove(sequences_query)

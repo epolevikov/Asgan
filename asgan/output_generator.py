@@ -1,3 +1,5 @@
+import asgan.fasta_parser as fp
+import networkx as nx
 
 
 def assembly_graph_save_dot(graph, out_dir, out_file):
@@ -41,7 +43,7 @@ def output_blocks_info(synteny_blocks_query, synteny_blocks_target, out_dir, out
         _output_blocks_info(synteny_blocks_target)
 
 
-def adjacency_graph_save_dot(graph, out_dir, out_file, block_attributes=None):
+def adjacency_graph_save_dot(adjacency_graph, out_dir, out_file, block_attributes=None):
     def get_edge_color(edge_name):
         if block_attributes is None:
             if edge_name.startswith("+") or edge_name.startswith("-"):
@@ -73,6 +75,13 @@ def adjacency_graph_save_dot(graph, out_dir, out_file, block_attributes=None):
 
             return edge_style
 
+    def contains_synteny_blocks(component):
+        for (_, _, data) in component.edges(data=True):
+            if data["name"].startswith("+") or data["name"].startswith("-"):
+                return True
+
+        return False
+
     with open("{}/{}".format(out_dir, out_file), "w") as f:
         f.write("digraph {\n")
         f.write("  node [shape=point, width=0.06]\n")
@@ -80,17 +89,21 @@ def adjacency_graph_save_dot(graph, out_dir, out_file, block_attributes=None):
         f.write("  graph[center=true, margin=0.5, ")
         f.write("nodesep=0.45, ranksep=0.35]\n")
 
-        for node_from, node_to, data in graph.edges(data=True):
-            edge_color = get_edge_color(data["name"])
-            edge_label = get_edge_label(data["name"])
-            edge_style = get_edge_style(data["name"])
-            edge_penwidth = 3 if edge_color == "black" else 6
+        for component in nx.weakly_connected_component_subgraphs(adjacency_graph, copy=False):
+            if not contains_synteny_blocks(component):
+                continue
 
-            f.write("  {} -> {} [".format(node_from, node_to))
-            f.write("label=\"{}\", ".format(edge_label))
-            f.write("color=\"{}\", ".format(edge_color))
-            f.write("style=\"{}\", ".format(edge_style))
-            f.write("penwidth=\"{}\"]\n".format(edge_penwidth))
+            for node_from, node_to, data in component.edges(data=True):
+                edge_color = get_edge_color(data["name"])
+                edge_label = get_edge_label(data["name"])
+                edge_style = get_edge_style(data["name"])
+                edge_penwidth = 3 if edge_color == "black" else 6
+
+                f.write("  {} -> {} [".format(node_from, node_to))
+                f.write("label=\"{}\", ".format(edge_label))
+                f.write("color=\"{}\", ".format(edge_color))
+                f.write("style=\"{}\", ".format(edge_style))
+                f.write("penwidth=\"{}\"]\n".format(edge_penwidth))
 
         f.write("}\n")
 
@@ -159,6 +172,52 @@ def save_path_sequences(paths_query, paths_target, out_dir):
         for path in paths_target:
             write_path(path, f)
             f.write("\n")
+
+
+def path_sequences_save_fasta(paths_query, sequences_fasta_query,
+                              paths_target, sequences_fasta_target,
+                              out_dir):
+    def complement(seq):
+        complement_nt = {"A": "T", "T": "A", "C": "G", "G": "C"}
+        complement_seq = ""
+
+        for nt in reversed(seq):
+            complement_seq += complement_nt[nt]
+
+        return complement_seq
+
+    sequences_query = fp.make_fasta_dict(sequences_fasta_query)
+    sequences_target = fp.make_fasta_dict(sequences_fasta_target)
+
+    path_query = paths_query[0]
+    path_target = paths_target[0]
+
+    sequence_query = ""
+    sequence_target = ""
+
+    for block in path_query:
+        sequence = sequences_query[block.sequence_name[:-1]]
+
+        if block.sequence_name[-1] == "+":
+            sequence_query += sequence[block.start:block.end + 1]
+        else:
+            sequence_query += complement(sequence)[block.start:block.end + 1]
+
+    for block in path_target:
+        sequence = sequences_target[block.sequence_name[:-1]]
+
+        if block.sequence_name[-1] == "+":
+            sequence_target += sequence[block.start:block.end + 1]
+        else:
+            sequence_target += complement(sequence)[block.start:block.end + 1]
+
+    with open("{}/path-query-1.fasta".format(out_dir), "w") as f:
+        f.write(">query_path1\n")
+        f.write(sequence_query + "\n")
+
+    with open("{}/path-target-1.fasta".format(out_dir), "w") as f:
+        f.write(">target_path1\n")
+        f.write(sequence_target + "\n")
 
 
 def output_stats(stats, out_dir):

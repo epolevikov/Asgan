@@ -24,12 +24,6 @@ class RawPafHit:
     def target_hit_length(self):
         return self.target_end - self.target_start
 
-    def query_alignment_rate(self):
-        return self.query_hit_length() / self.query_len
-
-    def target_alignment_rate(self):
-        return self.target_hit_length() / self.target_len
-
     def __str__(self):
         query_info = "{}\t{}\t{}\t{}".format(
             self.query_name,
@@ -49,7 +43,7 @@ class RawPafHit:
 def align(sequences_query, sequences_target):
     out_file = "minimap.paf"
 
-    _run_minimap(sequences_query, sequences_target, out_file)
+    run_minimap(sequences_query, sequences_target, out_file)
 
     with open(out_file) as f:
         raw_hits = [RawPafHit(raw_hit) for raw_hit in f]
@@ -58,8 +52,8 @@ def align(sequences_query, sequences_target):
     return raw_hits
 
 
-def _run_minimap(sequences_query, sequences_target, out_file):
-    MINIMAP_BIN = "lib/Flye/bin/flye-minimap2"
+def run_minimap(sequences_query, sequences_target, out_file):
+    MINIMAP_BIN = "lib/minimap2/minimap2"
 
     cmd = [MINIMAP_BIN]
     cmd.extend(["--secondary=no"])
