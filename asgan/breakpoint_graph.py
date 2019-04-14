@@ -128,11 +128,9 @@ def check_adjacency(id_from, id_to, contracted_adjacency_graph, block2edge, id2b
 
     if from_end == to_start:
         dist = contracted_adjacency_graph.nodes[from_end].get("distance")
+        block_from, block_to = id2block[id_from], id2block[id_to]
 
-        if dist is None:
-            block_from = id2block[id_from]
-            block_to = id2block[id_to]
-
+        if dist is None or block_from.sequence_name != block_to.sequence_name:
             dist = block_to.start + (block_from.sequence_length - block_from.end)
 
         return dist < 3 * 10**5
