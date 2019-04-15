@@ -159,16 +159,40 @@ def path_components_save_dot(paths, unused_edges, out_dir):
 
 def save_path_sequences(paths_query, paths_target, out_dir):
     def write_block_pair(block_query, block_target):
+        if block_query is not None:
+            query_sequence_name = block_query.sequence_name
+            query_sequence_length = pretty_number(block_query.sequence_length)
+            query_start = pretty_number(block_query.start)
+            query_end = pretty_number(block_query.end)
+        else:
+            query_sequence_name = fill("")
+            query_sequence_length = fill("")
+            query_start = fill("")
+            query_end = fill("")
+
+        if block_target is not None:
+            target_sequence_name = block_target.sequence_name
+            target_sequence_length = pretty_number(block_target.sequence_length)
+            target_start = pretty_number(block_target.start)
+            target_end = pretty_number(block_target.end)
+        else:
+            target_sequence_name = fill("")
+            target_sequence_length = fill("")
+            target_start = fill("")
+            target_end = fill("")
+
+        if block_query is not None:
+            block_id = block_query.signed_id()
+        else:
+            block_id = block_id.signed_id()
+
         f.write("{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\n".format(
-            block_query.signed_id(),
-            block_query.sequence_name,
-            pretty_number(block_query.sequence_length),
-            pretty_number(block_query.start),
-            pretty_number(block_query.end),
-            block_target.sequence_name,
-            pretty_number(block_target.sequence_length),
-            pretty_number(block_target.start),
-            pretty_number(block_target.end)))
+            block_id,
+            query_sequence_name, query_sequence_length,
+            query_start, query_end,
+            target_sequence_name, target_sequence_length,
+            target_start,
+            target_end))
 
     def write_path_pair(path_query, path_target):
         for i in range(len(path_query)):
@@ -182,19 +206,14 @@ def save_path_sequences(paths_query, paths_target, out_dir):
                     j += 1
 
                 while j < len(subpath_query):
-                    write_block_pair(subpath_query[j], dummy_block)
+                    write_block_pair(subpath_query[j], None)
                     j += 1
 
                 while j < len(subpath_target):
-                    write_block_pair(dummy_block, subpath_target[j])
+                    write_block_pair(None, subpath_target[j])
                     j += 1
             else:
                 write_block_pair(path_query[i], path_target[i])
-
-    import asgan.synteny_blocks as sb
-    dummy_block = sb.SequenceBlock(id=None, sequence_name="",
-                                   sequence_length="",
-                                   start="", end="")
 
     with open("{}/synteny_paths.txt".format(out_dir), "w") as f:
         for i in range(len(paths_query)):
