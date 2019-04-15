@@ -1,8 +1,6 @@
 import asgan.fasta_parser as fp
 import networkx as nx
 
-import asgan.synteny_blocks as sb
-
 
 def assembly_graph_save_dot(graph, out_dir, out_file):
     with open("{}/{}".format(out_dir, out_file), "w") as f:
@@ -193,6 +191,7 @@ def save_path_sequences(paths_query, paths_target, out_dir):
             else:
                 write_block_pair(path_query[i], path_target[i])
 
+    import asgan.synteny_blocks as sb
     dummy_block = sb.SequenceBlock(id=None, sequence_name="",
                                    sequence_length="",
                                    start="", end="")
