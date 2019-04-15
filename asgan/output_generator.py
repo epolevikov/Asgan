@@ -1,6 +1,8 @@
 import asgan.fasta_parser as fp
 import networkx as nx
 
+import asgan.synteny_blocks as sb
+
 
 def assembly_graph_save_dot(graph, out_dir, out_file):
     with open("{}/{}".format(out_dir, out_file), "w") as f:
@@ -158,19 +160,46 @@ def path_components_save_dot(paths, unused_edges, out_dir):
 
 
 def save_path_sequences(paths_query, paths_target, out_dir):
-    def write_path(path, f):
-        for block in path:
-            f.write(str(block) + "\n")
+    def write_block_pair(block_query, block_target):
+        f.write("{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\n".format(
+            block_query.signed_id(),
+            block_query.sequence_name,
+            pretty_number(block_query.sequence_length),
+            pretty_number(block_query.start),
+            pretty_number(block_query.end),
+            block_target.sequence_name,
+            pretty_number(block_target.sequence_length),
+            pretty_number(block_target.start),
+            pretty_number(block_target.end)))
+
+    def write_path_pair(path_query, path_target):
+        for i in range(len(path_query)):
+            if isinstance(path_query[i], list):
+                subpath_query = path_query[i]
+                subpath_target = path_target[i]
+
+                j = 0
+                while j < min(len(subpath_query), len(subpath_target)):
+                    write_block_pair(subpath_query[j], subpath_target[j])
+                    j += 1
+
+                while j < len(subpath_query):
+                    write_block_pair(subpath_query[j], dummy_block)
+                    j += 1
+
+                while j < len(subpath_target):
+                    write_block_pair(dummy_block, subpath_target[j])
+                    j += 1
+            else:
+                write_block_pair(path_query[i], path_target[i])
+
+    dummy_block = sb.SequenceBlock(id=None, sequence_name="",
+                                   sequence_length="",
+                                   start="", end="")
 
     with open("{}/synteny_paths.txt".format(out_dir), "w") as f:
-        f.write("Query:\n\n")
-        for path in paths_query:
-            write_path(path, f)
-            f.write("\n")
-
-        f.write("Target:\n\n")
-        for path in paths_target:
-            write_path(path, f)
+        for i in range(len(paths_query)):
+            write_path_pair(paths_query[i], paths_target[i])
             f.write("\n")
 
 
@@ -280,7 +309,7 @@ def output_stats(stats, out_dir):
         f.write("uc: {}\n".format(stats["number_united_components"]))
 
 
-def pretty_number(number, min_width=12, fill=" "):
+def pretty_number(number, min_width=12):
     digits = []
     number = str(number)
     is_neg = False
@@ -300,6 +329,11 @@ def pretty_number(number, min_width=12, fill=" "):
         number = "-" + number
 
     if min_width is not None and len(number) < min_width:
-        number += " " * (min_width - len(number))
+        number = fill(number, min_width)
 
     return number
+
+
+def fill(word, min_width=12):
+    word += " " * (min_width - len(word))
+    return word

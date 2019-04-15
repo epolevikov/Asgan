@@ -147,7 +147,13 @@ def calc_path_lengths(paths):
 
 
 def calc_path_length(path):
-    path_length = sum([block.length() for block in path])
+    path_length = 0
+
+    for subpath in path:
+        if isinstance(subpath, list):
+            path_length += sum([block.length() for block in subpath])
+        else:
+            path_length += subpath.length()
 
     if len(path) > 1 and path[0].signed_id() == path[-1].signed_id():
         path_length -= path[0].length()

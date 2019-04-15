@@ -10,6 +10,9 @@ class SequenceBlock:
         self.end = end
 
     def signed_id(self):
+        if self.id is None:
+            return ""
+
         return ["-", "+"][self.id > 0] + str(abs(self.id))
 
     def length(self):

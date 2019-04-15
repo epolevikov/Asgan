@@ -73,7 +73,7 @@ def build_path_sequence(synteny_path, contracted_adjacency_graph,
                                                     block2edge, edge2data)
 
     path_sequence.append(block_from)
-    path_sequence.extend(path_between_blocks)
+    path_sequence.append(path_between_blocks)
     path_sequence.append(block_to)
 
     for i in range(2, len(synteny_path)):
@@ -83,7 +83,7 @@ def build_path_sequence(synteny_path, contracted_adjacency_graph,
                                                         contracted_adjacency_graph,
                                                         block2edge, edge2data)
 
-        path_sequence.extend(path_between_blocks)
+        path_sequence.append(path_between_blocks)
         path_sequence.append(block_to)
 
     return path_sequence

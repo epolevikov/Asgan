@@ -71,10 +71,10 @@ def main():
                           synteny_paths, number_united_components, args.out_dir)
 
     # Generating output
+    '''
     out_gen.output_blocks_info(synteny_blocks_query, synteny_blocks_target,
                                out_dir=args.out_dir, out_file="synteny_blocks.txt")
 
-    '''
     out_gen.assembly_graph_save_dot(graph=assembly_graph_query,
                                     out_file="assembly_graph_query.gv",
                                     out_dir=args.out_dir)
