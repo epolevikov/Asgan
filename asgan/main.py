@@ -57,6 +57,9 @@ def main():
 
     path_components = bpg.build_path_components(breakpoint_graph, max_matching)
     unused_edges = bpg.get_unused_edges(breakpoint_graph, max_matching)
+
+    out_gen.path_components_save_dot(path_components, unused_edges, out_dir=args.out_dir)
+
     number_united_components = bpg.unite_cycles(path_components, unused_edges)
 
     synteny_paths = ps.build_synteny_paths(path_components)
@@ -83,11 +86,10 @@ def main():
                                     out_dir=args.out_dir)
 
     out_gen.save_raw_hits(raw_hits, out_dir=args.out_dir, out_file="raw_hits.txt")
-
+    '''
     out_gen.breakpoint_graph_save_dot(breakpoint_graph, max_matching,
                                       out_dir=args.out_dir,
                                       out_file="breakpoint_graph.gv")
-    '''
 
     block_attributes = sb.set_block_attributes(synteny_paths)
     out_gen.adjacency_graph_save_dot(adjacency_graph_query, out_dir=args.out_dir,

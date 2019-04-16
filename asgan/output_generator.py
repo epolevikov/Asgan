@@ -6,7 +6,7 @@ def assembly_graph_save_dot(graph, out_dir, out_file):
     with open("{}/{}".format(out_dir, out_file), "w") as f:
         f.write("digraph {\n")
         f.write("  node [shape=point]\n")
-        f.write("  edge [penwidth=5, color=green, fontsize=20]\n")
+        f.write("  edge [penwidth=5, color=blue, fontsize=20]\n")
 
         for (node_from, node_to, data) in graph.edges(data=True):
             edge_color = ["green", "black"][data["is_repeat"]]
@@ -47,7 +47,7 @@ def adjacency_graph_save_dot(adjacency_graph, out_dir, out_file, block_attribute
     def get_edge_color(edge_name):
         if block_attributes is None:
             if edge_name.startswith("+") or edge_name.startswith("-"):
-                return "green"
+                return "blue"
             else:
                 return "black"
         else:
@@ -111,10 +111,10 @@ def adjacency_graph_save_dot(adjacency_graph, out_dir, out_file, block_attribute
 def breakpoint_graph_save_dot(graph, max_matching, out_dir, out_file):
     def get_edge_color(node_from, node_to):
         if (node_from, node_to) in max_matching:
-            return "green"
+            return "blue"
 
         if (node_to, node_from) in max_matching:
-            return "green"
+            return "blue"
 
         return "black"
 
@@ -145,7 +145,7 @@ def path_components_save_dot(paths, unused_edges, out_dir):
                 f.write("  {} [label=\"{}\"]\n".format(node, data["label"]))
 
             for (node_from, node_to) in paths.edges():
-                f.write("  {} -- {} [color=green] \n".format(node_from, node_to))
+                f.write("  {} -- {} [color=blue] \n".format(node_from, node_to))
 
             if with_unused_edges:
                 for (node_from, node_to) in unused_edges:
@@ -184,7 +184,7 @@ def save_path_sequences(paths_query, paths_target, out_dir):
         if block_query is not None:
             block_id = block_query.signed_id()
         else:
-            block_id = block_id.signed_id()
+            block_id = block_target.signed_id()
 
         f.write("{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\n".format(
             block_id,
@@ -218,7 +218,7 @@ def save_path_sequences(paths_query, paths_target, out_dir):
     with open("{}/synteny_paths.txt".format(out_dir), "w") as f:
         for i in range(len(paths_query)):
             write_path_pair(paths_query[i], paths_target[i])
-            f.write("\n")
+            f.write("\n\n")
 
 
 def path_sequences_save_fasta(paths_query, sequences_fasta_query,

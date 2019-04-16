@@ -4,12 +4,14 @@ import networkx as nx
 def calc_stats(assembly_graph_query, synteny_blocks_query, path_sequences_query,
                assembly_graph_target, synteny_blocks_target, path_sequences_target,
                synteny_paths, number_united_components, out_dir):
-    number_wcc_query = nx.number_weakly_connected_components(assembly_graph_query)
-    number_wcc_target = nx.number_weakly_connected_components(assembly_graph_target)
+    number_wcc_query = number_wcc(assembly_graph_query, synteny_blocks_query)
+    number_wcc_target = number_wcc(assembly_graph_target, synteny_blocks_target)
 
     # sequences
-    sequence_lengths_query = calc_sequence_lengths(assembly_graph_query)
-    sequence_lengths_target = calc_sequence_lengths(assembly_graph_target)
+    sequence_lengths_query = calc_sequence_lengths(assembly_graph_query,
+                                                   synteny_blocks_query)
+    sequence_lengths_target = calc_sequence_lengths(assembly_graph_target,
+                                                    synteny_blocks_target)
 
     number_sequences_query = len(sequence_lengths_query)
     number_sequences_target = len(sequence_lengths_target)
@@ -129,8 +131,33 @@ def filter_complement(lengths):
     return [length for i, length in enumerate(sorted(lengths)) if i % 2 == 0]
 
 
-def calc_sequence_lengths(assembly_graph):
-    return filter_complement([data["length"] for _, _, data in assembly_graph.edges(data=True)])
+def contains_synteny_blocks(component, synteny_blocks):
+    for (_, _, data) in component.edges(data=True):
+        if data["name"] in synteny_blocks:
+            return True
+
+    return False
+
+
+def number_wcc(assembly_graph, synteny_blocks):
+    number_wcc = 0
+
+    for component in nx.weakly_connected_component_subgraphs(assembly_graph, copy=False):
+        if contains_synteny_blocks(component, synteny_blocks):
+            number_wcc += 1
+
+    return number_wcc
+
+
+def calc_sequence_lengths(assembly_graph, synteny_blocks):
+    sequence_lengths = []
+
+    for component in nx.weakly_connected_component_subgraphs(assembly_graph, copy=False):
+        if contains_synteny_blocks(component, synteny_blocks):
+            sequence_lengths.extend([data["length"] for (_, _, data)
+                                     in component.edges(data=True)])
+
+    return filter_complement(sequence_lengths)
 
 
 def calc_synteny_block_lengths(synteny_blocks):
