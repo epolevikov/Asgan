@@ -42,10 +42,10 @@ def main():
                                                     out_file="sequences_target.fasta")
 
     raw_hits = aligner.align(sequences_query, sequences_target)
-    raw_hits = ht.filter_repeats(raw_hits, repeats_query, repeats_target)
-    hits = ht.process_raw_hits(raw_hits)
+    filtered_hits = ht.filter_repeats(raw_hits, repeats_query, repeats_target)
+    processed_hits = ht.process_raw_hits(filtered_hits)
 
-    synteny_blocks_query, synteny_blocks_target = sb.extract_synteny_blocks(hits)
+    synteny_blocks_query, synteny_blocks_target = sb.extract_synteny_blocks(processed_hits)
 
     adjacency_graph_query = adg.build_adjacency_graph(assembly_graph_query, synteny_blocks_query)
     adjacency_graph_target = adg.build_adjacency_graph(assembly_graph_target, synteny_blocks_target)
@@ -71,7 +71,7 @@ def main():
 
     stats = st.calc_stats(assembly_graph_query, synteny_blocks_query, path_sequences_query,
                           assembly_graph_target, synteny_blocks_target, path_sequences_target,
-                          synteny_paths, number_united_components, args.out_dir)
+                          synteny_paths, number_united_components, raw_hits, args.out_dir)
 
     # Generating output
     '''

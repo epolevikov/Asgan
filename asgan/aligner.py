@@ -18,11 +18,17 @@ class RawPafHit:
         self.target_start = int(raw_hit[7])
         self.target_end = int(raw_hit[8])
 
+        self.matching_bases = int(raw_hit[9])
+        self.number_bases = int(raw_hit[10])
+
     def query_hit_length(self):
         return self.query_end - self.query_start
 
     def target_hit_length(self):
         return self.target_end - self.target_start
+
+    def alignment_identity(self):
+        return self.matching_bases / self.number_bases
 
     def __str__(self):
         query_info = "{}\t{}\t{}\t{}".format(

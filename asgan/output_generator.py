@@ -270,7 +270,7 @@ def path_sequences_save_fasta(paths_query, sequences_fasta_query,
 def output_stats(stats, out_dir):
     with open("{}/stats.txt".format(out_dir), "w") as f:
         # header
-        f.write("\tQuery       \tTarget\n")
+        f.write("\tquery       \ttarget\n")
 
         # wcc
         number_wcc_query = pretty_number(stats["number_wcc_query"])
@@ -323,8 +323,18 @@ def output_stats(stats, out_dir):
         f.write("L50\t{}\t{}\n\n".format(paths_l50_query, paths_l50_target))
 
         # link types and united components
-        f.write("link types: {} {} {} {}\n".format(*stats["link_types"]))
-        f.write("uc: {}\n".format(stats["number_united_components"]))
+        f.write("links: {} {} {} {}\n".format(*stats["link_types"]))
+        f.write("uc: {}\n\n".format(stats["number_united_components"]))
+
+        # alignment identity
+
+        f.write("mean ai:\t {}\n".format(stats["mean_alignment_identity"]))
+        f.write("total ai:\t {}\n\n".format(stats["total_alignment_identity"]))
+
+        # assembly coverage
+
+        f.write("query ac:\t {}\n".format(stats["query_assembly_coverage"]))
+        f.write("target ac:\t {}\n".format(stats["target_assembly_coverage"]))
 
 
 def pretty_number(number, min_width=12):

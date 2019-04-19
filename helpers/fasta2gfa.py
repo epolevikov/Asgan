@@ -32,7 +32,7 @@ def main():
     with open(args.input_fasta) as fin, open(args.out_file, "w") as fout:
         fout.write("H\tVN:Z:1.0\n")
         for header, seq in read_fasta(fin):
-            fout.write("S\t{}\t{}\tLN:i:{}\n".format(header, seq, len(seq)))
+            fout.write("S\t{}\t{}\tLN:i:{}\n".format(header, seq.upper(), len(seq)))
 
 
 if __name__ == "__main__":
