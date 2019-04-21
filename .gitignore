@@ -2,4 +2,4 @@ lib/
 data/
 asgan/__pycache__
 NCTC_output/
-run.py
+run_nctc.py
