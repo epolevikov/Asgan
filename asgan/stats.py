@@ -101,8 +101,8 @@ def calc_stats(assembly_graph_query, synteny_blocks_query, path_sequences_query,
     stats["target_assembly_coverage"] = target_assembly_coverage
 
     # stats for the case when target is a reference genome
-    genome_size = sum(calc_sequence_lengths(assembly_graph_target))
-    stats["genome_size"] = sequences_total_length_target
+    genome_size = calc_genome_size(assembly_graph_target)
+    stats["genome_size"] = genome_size
 
     # sequences NG50, LG50
     sequences_ng50_query, sequences_lg50_query = calc_nx(
@@ -153,15 +153,24 @@ def number_wcc(assembly_graph, synteny_blocks):
     return number_wcc
 
 
-def calc_sequence_lengths(assembly_graph, synteny_blocks=None):
+def calc_sequence_lengths(assembly_graph, synteny_blocks):
     sequence_lengths = []
 
     for component in nx.weakly_connected_component_subgraphs(assembly_graph, copy=False):
-        if synteny_blocks is None or contains_synteny_blocks(component, synteny_blocks):
+        if contains_synteny_blocks(component, synteny_blocks):
             sequence_lengths.extend([data["length"] for (_, _, data)
                                      in component.edges(data=True)])
 
     return filter_complement(sequence_lengths)
+
+
+def calc_genome_size(assembly_graph):
+    genome_size = 0
+
+    for (_, _, data) in assembly_graph.edges(data=True):
+        genome_size += data["length"]
+
+    return genome_size / 2
 
 
 def calc_synteny_block_lengths(synteny_blocks):
