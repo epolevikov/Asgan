@@ -277,6 +277,11 @@ def output_stats(stats, out_dir):
         number_wcc_target = pretty_number(stats["number_wcc_target"])
         f.write("cc\t{}\t{}\n\n".format(number_wcc_query, number_wcc_target))
 
+        # assembly coverage
+
+        f.write("cvg\t{}\t{}\n\n".format(stats["query_assembly_coverage"],
+                                         stats["target_assembly_coverage"]))
+
         # sequences
         number_sequences_query = pretty_number(stats["number_sequences_query"])
         number_sequences_target = pretty_number(stats["number_sequences_target"])
@@ -331,10 +336,38 @@ def output_stats(stats, out_dir):
         f.write("mean ai:\t {}\n".format(stats["mean_alignment_identity"]))
         f.write("total ai:\t {}\n\n".format(stats["total_alignment_identity"]))
 
-        # assembly coverage
+        # stats for the case when target is a reference genome
 
-        f.write("query ac:\t {}\n".format(stats["query_assembly_coverage"]))
-        f.write("target ac:\t {}\n".format(stats["target_assembly_coverage"]))
+        f.write("# stats for the case when target is a reference genome\n")
+        f.write("genome size: {}\n\n".format(pretty_number(stats["genome_size"])))
+        f.write("\tquery NG50\ttarget NG50\tquery LG50\ttarget LG50\n")
+
+        # sequences
+        sequences_ng50_query = pretty_number(stats["sequences_ng50_query"])
+        sequences_ng50_target = pretty_number(stats["sequences_ng50_target"])
+        sequences_lg50_query = pretty_number(stats["sequences_lg50_query"])
+        sequences_lg50_target = pretty_number(stats["sequences_lg50_target"])
+
+        f.write("seqs\t{}\t{}\t{}\t{}\n".format(sequences_ng50_query, sequences_ng50_target,
+                                                sequences_lg50_query, sequences_lg50_target))
+
+        # blocks
+        blocks_ng50_query = pretty_number(stats["blocks_ng50_query"])
+        blocks_ng50_target = pretty_number(stats["blocks_ng50_target"])
+        blocks_lg50_query = pretty_number(stats["blocks_lg50_query"])
+        blocks_lg50_target = pretty_number(stats["blocks_lg50_target"])
+
+        f.write("blocks\t{}\t{}\t{}\t{}\n".format(blocks_ng50_query, blocks_ng50_target,
+                                                  blocks_lg50_query, blocks_lg50_target))
+
+        # paths
+        paths_ng50_query = pretty_number(stats["paths_ng50_query"])
+        paths_ng50_target = pretty_number(stats["paths_ng50_target"])
+        paths_lg50_query = pretty_number(stats["paths_lg50_query"])
+        paths_lg50_target = pretty_number(stats["paths_lg50_target"])
+
+        f.write("paths\t{}\t{}\t{}\t{}\n".format(paths_ng50_query, paths_ng50_target,
+                                                 paths_lg50_query, paths_lg50_target))
 
 
 def pretty_number(number, min_width=12):

@@ -100,6 +100,46 @@ def calc_stats(assembly_graph_query, synteny_blocks_query, path_sequences_query,
     stats["query_assembly_coverage"] = query_assembly_coverage
     stats["target_assembly_coverage"] = target_assembly_coverage
 
+    # stats for the case when target is a reference genome
+    genome_size = sum(calc_sequence_lengths(assembly_graph_target))
+    stats["genome_size"] = sequences_total_length_target
+
+    # sequences NG50, LG50
+    sequences_ng50_query, sequences_lg50_query = calc_nx(
+        sequence_lengths_query, total_length=genome_size)
+
+    sequences_ng50_target, sequences_lg50_target = calc_nx(
+        sequence_lengths_target, total_length=genome_size)
+
+    stats["sequences_ng50_query"] = sequences_ng50_query
+    stats["sequences_ng50_target"] = sequences_ng50_target
+    stats["sequences_lg50_query"] = sequences_lg50_query
+    stats["sequences_lg50_target"] = sequences_lg50_target
+
+    # blocks NG50, LG50
+    blocks_ng50_query, blocks_lg50_query = calc_nx(
+        block_lengths_query, total_length=genome_size)
+
+    blocks_ng50_target, blocks_lg50_target = calc_nx(
+        block_lengths_target, total_length=genome_size)
+
+    stats["blocks_ng50_query"] = blocks_ng50_query
+    stats["blocks_ng50_target"] = blocks_ng50_target
+    stats["blocks_lg50_query"] = blocks_lg50_query
+    stats["blocks_lg50_target"] = blocks_lg50_target
+
+    # paths NG50, LG50
+    paths_ng50_query, paths_lg50_query = calc_nx(
+        path_lengths_query, total_length=genome_size)
+
+    paths_ng50_target, paths_lg50_target = calc_nx(
+        path_lengths_target, total_length=genome_size)
+
+    stats["paths_ng50_query"] = paths_ng50_query
+    stats["paths_ng50_target"] = paths_ng50_target
+    stats["paths_lg50_query"] = paths_lg50_query
+    stats["paths_lg50_target"] = paths_lg50_target
+
     return stats
 
 
@@ -113,11 +153,11 @@ def number_wcc(assembly_graph, synteny_blocks):
     return number_wcc
 
 
-def calc_sequence_lengths(assembly_graph, synteny_blocks):
+def calc_sequence_lengths(assembly_graph, synteny_blocks=None):
     sequence_lengths = []
 
     for component in nx.weakly_connected_component_subgraphs(assembly_graph, copy=False):
-        if contains_synteny_blocks(component, synteny_blocks):
+        if synteny_blocks is None or contains_synteny_blocks(component, synteny_blocks):
             sequence_lengths.extend([data["length"] for (_, _, data)
                                      in component.edges(data=True)])
 
@@ -154,14 +194,18 @@ def calc_path_length(path):
 
 def calc_mean_alignment_identity(raw_hits):
     alignment_identities = [hit.alignment_identity() for hit in raw_hits]
-    mean_alignment_identity = sum(alignment_identities) / len(alignment_identities)
+    sum_alignment_identities = float(sum(alignment_identities))
+    len_alignment_identities = float(len(alignment_identities))
+    mean_alignment_identity = sum_alignment_identities / len_alignment_identities
     return round(mean_alignment_identity, 3)
 
 
 def calc_total_alignment_identity(raw_hits):
     matching_bases = [hit.matching_bases for hit in raw_hits]
     number_bases = [hit.number_bases for hit in raw_hits]
-    total_alignment_identity = sum(matching_bases) / sum(number_bases)
+    sum_matching_bases = float(sum(matching_bases))
+    sum_number_bases = float(sum(number_bases))
+    total_alignment_identity = sum_matching_bases / sum_number_bases
     return round(total_alignment_identity, 3)
 
 
@@ -174,13 +218,13 @@ def calc_assembly_coverage(raw_hits, assembly_graph_query, assembly_graph_target
     target_sequence_lengths = [data["length"] for (_, _, data)
                                in assembly_graph_target.edges(data=True)]
 
-    query_hit_total_length = sum(query_hit_lengths)
-    query_sequence_total_length = sum(query_sequence_lengths) / 2
+    query_hit_total_length = float(sum(query_hit_lengths))
+    query_sequence_total_length = float(sum(query_sequence_lengths) / 2)
     query_assembly_coverage = query_hit_total_length / query_sequence_total_length
     query_assembly_coverage = round(query_assembly_coverage, 3)
 
-    target_hit_total_length = sum(target_hit_lengths)
-    target_sequence_total_length = sum(target_sequence_lengths) / 2
+    target_hit_total_length = float(sum(target_hit_lengths))
+    target_sequence_total_length = float(sum(target_sequence_lengths) / 2)
     target_assembly_coverage = target_hit_total_length / target_sequence_total_length
     target_assembly_coverage = round(target_assembly_coverage, 3)
 
@@ -199,8 +243,10 @@ def contains_synteny_blocks(component, synteny_blocks):
     return False
 
 
-def calc_nx(lengths, rate=0.5):
-    total_length = sum(lengths)
+def calc_nx(lengths, total_length=None, rate=0.5):
+    if total_length is None:
+        total_length = sum(lengths)
+
     nx, lx, sum_length = 0, 0, 0
 
     for length in sorted(lengths, reverse=True):

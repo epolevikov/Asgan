@@ -28,7 +28,7 @@ class RawPafHit:
         return self.target_end - self.target_start
 
     def alignment_identity(self):
-        return self.matching_bases / self.number_bases
+        return float(self.matching_bases) / float(self.number_bases)
 
     def __str__(self):
         query_info = "{}\t{}\t{}\t{}".format(

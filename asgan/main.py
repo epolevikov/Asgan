@@ -30,21 +30,25 @@ def main():
 
     gfa_query, gfa_target = args.input_query, args.input_target
 
+    print("Building assembly graphs..")
     assembly_graph_query = asg.build_assembly_graph(gfa_query)
     assembly_graph_target = asg.build_assembly_graph(gfa_target)
 
     repeats_query = asg.get_repeats(assembly_graph_query)
     repeats_target = asg.get_repeats(assembly_graph_target)
 
+    print("Extracting sequences..")
     sequences_query = gfa_parser.extract_sequences(gfa_query, out_dir=args.out_dir,
                                                    out_file="sequences_query.fasta")
     sequences_target = gfa_parser.extract_sequences(gfa_target, out_dir=args.out_dir,
                                                     out_file="sequences_target.fasta")
 
+    print("Aligning sequences..")
     raw_hits = aligner.align(sequences_query, sequences_target)
     filtered_hits = ht.filter_repeats(raw_hits, repeats_query, repeats_target)
     processed_hits = ht.process_raw_hits(filtered_hits)
 
+    print("Finding shared paths..")
     synteny_blocks_query, synteny_blocks_target = sb.extract_synteny_blocks(processed_hits)
 
     adjacency_graph_query = adg.build_adjacency_graph(assembly_graph_query, synteny_blocks_query)
@@ -69,6 +73,7 @@ def main():
     path_sequences_target = ps.build_path_sequences(synteny_blocks_target, synteny_paths,
                                                     adjacency_graph_target)
 
+    print("Calculating stats..")
     stats = st.calc_stats(assembly_graph_query, synteny_blocks_query, path_sequences_query,
                           assembly_graph_target, synteny_blocks_target, path_sequences_target,
                           synteny_paths, number_united_components, raw_hits, args.out_dir)
