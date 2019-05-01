@@ -279,12 +279,16 @@ def output_stats(stats, out_dir):
 
         # assembly coverage
 
-        f.write("cvg\t{}\t{}\n\n".format(stats["query_assembly_coverage"],
-                                         stats["target_assembly_coverage"]))
+        f.write("hcvg\t{}\t{}\n".format(stats["query_hits_coverage"],
+                                        stats["target_hits_coverage"]))
+        f.write("bcvg\t{}\t{}\n\n".format(stats["query_blocks_coverage"],
+                                          stats["target_blocks_coverage"]))
 
         # sequences
         number_sequences_query = pretty_number(stats["number_sequences_query"])
         number_sequences_target = pretty_number(stats["number_sequences_target"])
+        number_unique_sequences_query = pretty_number(stats["number_unique_sequences_query"])
+        number_unique_sequences_target = pretty_number(stats["number_unique_sequences_target"])
         sequences_total_length_query = pretty_number(stats["sequences_total_length_query"])
         sequences_total_length_target = pretty_number(stats["sequences_total_length_target"])
         sequences_n50_query = pretty_number(stats["sequences_n50_query"])
@@ -294,6 +298,7 @@ def output_stats(stats, out_dir):
 
         f.write("seqs\t{}\t{}\n".format(number_sequences_query, number_sequences_target))
         f.write("tlen\t{}\t{}\n".format(sequences_total_length_query, sequences_total_length_target))
+        f.write("useq\t{}\t{}\n".format(number_unique_sequences_query, number_unique_sequences_target))
         f.write("N50\t{}\t{}\n".format(sequences_n50_query, sequences_n50_target))
         f.write("L50\t{}\t{}\n\n".format(sequences_l50_query, sequences_l50_target))
 
@@ -339,7 +344,9 @@ def output_stats(stats, out_dir):
         # stats for the case when target is a reference genome
 
         f.write("# stats for the case when target is a reference genome\n")
-        f.write("genome size: {}\n\n".format(pretty_number(stats["genome_size"])))
+        genome_size = pretty_number(stats["genome_size"])
+
+        f.write("genome size: {}\n\n".format(genome_size))
         f.write("\tquery NG50\ttarget NG50\tquery LG50\ttarget LG50\n")
 
         # sequences

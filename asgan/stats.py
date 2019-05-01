@@ -22,6 +22,11 @@ def calc_stats(assembly_graph_query, synteny_blocks_query, path_sequences_query,
     number_sequences_query = len(sequence_lengths_query)
     number_sequences_target = len(sequence_lengths_target)
 
+    number_unique_sequences_query = calc_unique_sequences(assembly_graph_query,
+                                                          synteny_blocks_query)
+    number_unique_sequences_target = calc_unique_sequences(assembly_graph_target,
+                                                           synteny_blocks_target)
+
     sequences_total_length_query = sum(sequence_lengths_query)
     sequences_total_length_target = sum(sequence_lengths_target)
 
@@ -30,6 +35,8 @@ def calc_stats(assembly_graph_query, synteny_blocks_query, path_sequences_query,
 
     stats["number_sequences_query"] = number_sequences_query
     stats["number_sequences_target"] = number_sequences_target
+    stats["number_unique_sequences_query"] = number_unique_sequences_query
+    stats["number_unique_sequences_target"] = number_unique_sequences_target
     stats["sequences_n50_query"] = sequences_n50_query
     stats["sequences_n50_target"] = sequences_n50_target
     stats["sequences_l50_query"] = sequences_l50_query
@@ -94,11 +101,17 @@ def calc_stats(assembly_graph_query, synteny_blocks_query, path_sequences_query,
 
     # assembly coverage
 
-    query_assembly_coverage, target_assembly_coverage = calc_assembly_coverage(
+    query_hits_coverage, target_hits_coverage = calc_assembly_coverage(
         raw_hits, assembly_graph_query, assembly_graph_target)
 
-    stats["query_assembly_coverage"] = query_assembly_coverage
-    stats["target_assembly_coverage"] = target_assembly_coverage
+    stats["query_hits_coverage"] = query_hits_coverage
+    stats["target_hits_coverage"] = target_hits_coverage
+
+    query_blocks_coverage = float(blocks_total_length_query) / float(sequences_total_length_query)
+    target_blocks_coverage = float(blocks_total_length_target) / float(sequences_total_length_target)
+
+    stats["query_blocks_coverage"] = round(query_blocks_coverage, 3)
+    stats["target_blocks_coverage"] = round(target_blocks_coverage, 3)
 
     # stats for the case when target is a reference genome
     genome_size = calc_genome_size(assembly_graph_target)
@@ -148,9 +161,27 @@ def number_wcc(assembly_graph, synteny_blocks):
 
     for component in nx.weakly_connected_component_subgraphs(assembly_graph, copy=False):
         if contains_synteny_blocks(component, synteny_blocks):
-            number_wcc += 1
+            if contains_complementary_sequences(component):
+                number_wcc += 2
+            else:
+                number_wcc += 1
 
-    return number_wcc
+    return number_wcc // 2
+
+
+def contains_complementary_sequences(component):
+    def complement(name):
+        return name[:-1] + ["+", "-"][name[-1] == "+"]
+
+    sequences = set()
+
+    for (_, _, data) in component.edges(data=True):
+        if complement(data["name"]) in sequences:
+            return True
+
+        sequences.add(data["name"])
+
+    return False
 
 
 def calc_sequence_lengths(assembly_graph, synteny_blocks):
@@ -164,13 +195,25 @@ def calc_sequence_lengths(assembly_graph, synteny_blocks):
     return filter_complement(sequence_lengths)
 
 
+def calc_unique_sequences(assembly_graph, synteny_blocks):
+    number_unique_sequences = 0
+
+    for component in nx.weakly_connected_component_subgraphs(assembly_graph, copy=False):
+        if contains_synteny_blocks(component, synteny_blocks):
+            for (_, _, data) in component.edges(data=True):
+                if data["length"] >= 50000 and not data["is_repeat"]:
+                    number_unique_sequences += 1
+
+    return number_unique_sequences // 2
+
+
 def calc_genome_size(assembly_graph):
     genome_size = 0
 
     for (_, _, data) in assembly_graph.edges(data=True):
         genome_size += data["length"]
 
-    return genome_size / 2
+    return genome_size // 2
 
 
 def calc_synteny_block_lengths(synteny_blocks):
