@@ -132,8 +132,10 @@ def check_adjacency(id_from, id_to, contracted_adjacency_graph, block2edge, id2b
 
         if dist is None or block_from.sequence_name != block_to.sequence_name:
             dist = block_to.start + (block_from.sequence_length - block_from.end)
+            return dist < 3 * 10**5
 
-        return dist < 3 * 10**5
+        # if the blocks are from the same sequence, the threshold is set to infty
+        return dist < float("inf")
 
     if not nx.has_path(contracted_adjacency_graph, from_end, to_start):
         return False
