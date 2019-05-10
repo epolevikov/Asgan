@@ -127,8 +127,8 @@ def _unite_processed_hits(processed_hits):
 
         if curr_hit.query_name != next_hit.query_name \
            or curr_hit.target_name != next_hit.target_name \
-           or not (0 <= query_hits_dist <= max_hits_dist) \
-           or not (0 <= target_hits_dist <= max_hits_dist):
+           or not (query_hits_dist <= max_hits_dist) \
+           or not (target_hits_dist <= max_hits_dist):
             united_hits.append(curr_hit)
             curr_hit = processed_hits[i]
         else:
