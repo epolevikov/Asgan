@@ -201,7 +201,7 @@ def calc_unique_sequences(assembly_graph, synteny_blocks):
     for component in nx.weakly_connected_component_subgraphs(assembly_graph, copy=False):
         if contains_synteny_blocks(component, synteny_blocks):
             for (_, _, data) in component.edges(data=True):
-                if data["length"] >= 50000 and not data["is_repeat"]:
+                if data["length"] >= 50000 and not data["is_repeat"] and data["name"] in synteny_blocks:
                     number_unique_sequences += 1
 
     return number_unique_sequences // 2
