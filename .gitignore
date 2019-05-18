@@ -1,5 +1,5 @@
-lib/
 data/
 asgan/__pycache__
 NCTC_output/
 run_nctc.py
+*.o

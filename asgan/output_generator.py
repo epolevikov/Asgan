@@ -270,19 +270,17 @@ def path_sequences_save_fasta(paths_query, sequences_fasta_query,
 def output_stats(stats, out_dir):
     with open("{}/stats.txt".format(out_dir), "w") as f:
         # header
-        f.write("\tquery       \ttarget\n")
+        f.write("\tQuery       \tTarget\n")
 
         # wcc
         number_wcc_query = pretty_number(stats["number_wcc_query"])
         number_wcc_target = pretty_number(stats["number_wcc_target"])
-        f.write("cc\t{}\t{}\n\n".format(number_wcc_query, number_wcc_target))
+        f.write("cc\t{}\t{}\n".format(number_wcc_query, number_wcc_target))
 
         # assembly coverage
 
-        f.write("hcvg\t{}\t{}\n".format(stats["query_hits_coverage"],
-                                        stats["target_hits_coverage"]))
-        f.write("bcvg\t{}\t{}\n\n".format(stats["query_blocks_coverage"],
-                                          stats["target_blocks_coverage"]))
+        # f.write("hcvg\t{}\t{}\n".format(stats["query_hits_coverage"],
+        #                                 stats["target_hits_coverage"]))
 
         # sequences
         number_sequences_query = pretty_number(stats["number_sequences_query"])
@@ -296,9 +294,10 @@ def output_stats(stats, out_dir):
         sequences_l50_query = pretty_number(stats["sequences_l50_query"])
         sequences_l50_target = pretty_number(stats["sequences_l50_target"])
 
+        f.write("useqs\t{}\t{}\n\n".format(number_unique_sequences_query, number_unique_sequences_target))
+
         f.write("seqs\t{}\t{}\n".format(number_sequences_query, number_sequences_target))
         f.write("tlen\t{}\t{}\n".format(sequences_total_length_query, sequences_total_length_target))
-        f.write("useq\t{}\t{}\n".format(number_unique_sequences_query, number_unique_sequences_target))
         f.write("N50\t{}\t{}\n".format(sequences_n50_query, sequences_n50_target))
         f.write("L50\t{}\t{}\n\n".format(sequences_l50_query, sequences_l50_target))
 
@@ -314,6 +313,8 @@ def output_stats(stats, out_dir):
 
         f.write("blocks\t{}\t{}\n".format(number_blocks_query, number_blocks_target))
         f.write("tlen\t{}\t{}\n".format(blocks_total_length_query, blocks_total_length_target))
+        f.write("bcvg\t{}\t{}\n".format(fill(stats["query_blocks_coverage"]),
+                                          fill(stats["target_blocks_coverage"])))
         f.write("N50\t{}\t{}\n".format(blocks_n50_query, blocks_n50_target))
         f.write("L50\t{}\t{}\n\n".format(blocks_l50_query, blocks_l50_target))
 
@@ -333,16 +334,17 @@ def output_stats(stats, out_dir):
         f.write("L50\t{}\t{}\n\n".format(paths_l50_query, paths_l50_target))
 
         # link types and united components
-        f.write("links: {} {} {} {}\n".format(*stats["link_types"]))
-        f.write("uc: {}\n\n".format(stats["number_united_components"]))
+        # f.write("links: {} {} {} {}\n".format(*stats["link_types"]))
+        # f.write("uc: {}\n\n".format(stats["number_united_components"]))
 
         # alignment identity
 
-        f.write("mean ai:\t {}\n".format(stats["mean_alignment_identity"]))
-        f.write("total ai:\t {}\n\n".format(stats["total_alignment_identity"]))
+        # f.write("mean ai:\t {}\n".format(stats["mean_alignment_identity"]))
+        # f.write("total ai:\t {}\n\n".format(stats["total_alignment_identity"]))
 
         # stats for the case when target is a reference genome
 
+        '''
         f.write("# stats for the case when target is a reference genome\n")
         genome_size = pretty_number(stats["genome_size"])
 
@@ -375,6 +377,7 @@ def output_stats(stats, out_dir):
 
         f.write("paths\t{}\t{}\t{}\t{}\n".format(paths_ng50_query, paths_ng50_target,
                                                  paths_lg50_query, paths_lg50_target))
+        '''
 
 
 def pretty_number(number, min_width=12):
@@ -403,5 +406,8 @@ def pretty_number(number, min_width=12):
 
 
 def fill(word, min_width=12):
+    if not isinstance(word, str):
+        word = str(word)
+
     word += " " * (min_width - len(word))
     return word
