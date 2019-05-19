@@ -1,5 +1,12 @@
 # Project description
-Most of the existing assemblers build an assembly graph along with contigs.
-Such graphs show how contigs are connected with each other, that is, they
-represent a repeat structure of a genome. The goal of this project is to
-implement a tool for analysis of such graphs using different metrics.
+Asgan (ASsembly Graphs ANalyzer) -- is a tool for analysis of assembly graphs.
+Asgan takes two assembly graphs in GFA format as input and finds the minimum set of
+homologous sequences for the graphs and calculates different statistics based
+of the found paths.
+
+# Installation
+```
+git clone https://github.com/epolevikov/Asgan
+git clone https://github.com/lh3/minimap2 Asgan/lib/minimap2
+make -C Asgan/lib/minimap2
+```
