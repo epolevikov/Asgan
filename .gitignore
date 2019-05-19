@@ -1,4 +1,5 @@
 data/
+lib/minimap2
 asgan/__pycache__
 NCTC_output/
 run_nctc.py
