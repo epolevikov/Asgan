@@ -19,6 +19,6 @@ python -m asgan \
     --out-dir=NCTC9016-Flye-vs-Canu
 ```
 
-A file named synteny_paths.txt contains synteny paths for the graphs,
-a file stats.txt contains different statistics based on the found paths.
-Two file in .gv format contain a visualization for the paths.
+A file named _synteny_paths.txt_ contains synteny paths for the graphs,
+a file _stats.txt_ contains different statistics based on the found paths.
+Two file with _.gv_ format contain a visualization for the paths.
