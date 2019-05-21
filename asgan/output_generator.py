@@ -25,8 +25,8 @@ def save_raw_hits(raw_hits, out_dir, out_file):
             f.write(str(raw_hit) + "\n")
 
 
-def output_blocks_info(synteny_blocks_query, synteny_blocks_target, out_dir, out_file):
-    def _output_blocks_info(synteny_blocks):
+def save_blocks(synteny_blocks_query, synteny_blocks_target, out_dir, out_file):
+    def _save_blocks(synteny_blocks):
         for seq, blocks in synteny_blocks.items():
             blocks.sort(key=lambda block: block.start)
 
@@ -37,10 +37,10 @@ def output_blocks_info(synteny_blocks_query, synteny_blocks_target, out_dir, out
 
     with open("{}/{}".format(out_dir, out_file), "w") as f:
         f.write("Query:\n\n")
-        _output_blocks_info(synteny_blocks_query)
+        save_blocks(synteny_blocks_query)
 
         f.write("\nTarget:\n\n")
-        _output_blocks_info(synteny_blocks_target)
+        save_blocks(synteny_blocks_target)
 
 
 def adjacency_graph_save_dot(adjacency_graph, out_dir, out_file, block_attributes=None):
