@@ -30,9 +30,9 @@ def main():
 
     gfa_query, gfa_target = args.input_query, args.input_target
 
-    print("Building assembly graphs..")
-    assembly_graph_query = asg.build_assembly_graph(gfa_query)
-    assembly_graph_target = asg.build_assembly_graph(gfa_target)
+    print("Parsing assembly graphs..")
+    assembly_graph_query = asg.parse_assembly_graph(gfa_query)
+    assembly_graph_target = asg.parse_assembly_graph(gfa_target)
 
     repeats_query = asg.get_repeats(assembly_graph_query)
     repeats_target = asg.get_repeats(assembly_graph_target)

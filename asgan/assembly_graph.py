@@ -3,16 +3,16 @@ from asgan.utils import DisjointSet
 from asgan.gfa_parser import parse_gfa
 
 
-def build_assembly_graph(gfa_file):
-    sequences, links = parse_gfa(gfa_file)
-    return build(sequences, links)
-
-
 class Sequence:
     def __init__(self, name, length, strand, is_repeat):
         self.name = name + strand
         self.length = length
         self.is_repeat = is_repeat
+
+
+def parse_assembly_graph(gfa_file):
+    sequences, links = parse_gfa(gfa_file)
+    return build(sequences, links)
 
 
 def build(raw_sequences, links):

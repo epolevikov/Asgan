@@ -314,7 +314,7 @@ def output_stats(stats, out_dir):
         f.write("blocks\t{}\t{}\n".format(number_blocks_query, number_blocks_target))
         f.write("tlen\t{}\t{}\n".format(blocks_total_length_query, blocks_total_length_target))
         f.write("bcvg\t{}\t{}\n".format(fill(stats["query_blocks_coverage"]),
-                                          fill(stats["target_blocks_coverage"])))
+                                        fill(stats["target_blocks_coverage"])))
         f.write("N50\t{}\t{}\n".format(blocks_n50_query, blocks_n50_target))
         f.write("L50\t{}\t{}\n\n".format(blocks_l50_query, blocks_l50_target))
 

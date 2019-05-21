@@ -41,14 +41,14 @@ class PafHit:
 
 
 def process_raw_hits(raw_hits):
-    raw_hits = _filter_hits_by_len(raw_hits)
+    raw_hits = filter_by_len(raw_hits)
 
     processed_hits = []
     for raw_hit in raw_hits:
-        processed_hit = _process_raw_hit(raw_hit)
+        processed_hit = process_raw_hit(raw_hit)
         processed_hits.append(processed_hit)
 
-    united_hits = _unite_processed_hits(processed_hits)
+    united_hits = unite_processed_hits(processed_hits)
 
     for i, hit in enumerate(united_hits):
         hit.id = i + 1
@@ -56,7 +56,7 @@ def process_raw_hits(raw_hits):
     hits = []
     for hit in united_hits:
         hits.append(hit)
-        hits.append(_complement_hit(hit))
+        hits.append(complement_hit(hit))
 
     return hits
 
@@ -76,7 +76,7 @@ def filter_repeats(raw_hits, repeats_query, repeats_target):
     return filtered_hits
 
 
-def _filter_hits_by_len(raw_hits, min_hit_length=50000):
+def filter_by_len(raw_hits, min_hit_length=50000):
     filtered_hits = []
 
     for raw_hit in raw_hits:
@@ -91,7 +91,7 @@ def _filter_hits_by_len(raw_hits, min_hit_length=50000):
     return filtered_hits
 
 
-def _process_raw_hit(raw_hit):
+def process_raw_hit(raw_hit):
     query_name = raw_hit.query_name + "+"
     query_start = raw_hit.query_start
     query_end = raw_hit.query_end
@@ -111,8 +111,9 @@ def _process_raw_hit(raw_hit):
     return processed_hit
 
 
-def _unite_processed_hits(processed_hits):
-    processed_hits.sort(key=lambda hit: (-hit.query_len, hit.query_name,
+def unite_processed_hits(processed_hits):
+    processed_hits.sort(key=lambda hit: (-hit.query_len,
+                                         hit.query_name,
                                          hit.query_start))
 
     united_hits = []
@@ -141,7 +142,7 @@ def _unite_processed_hits(processed_hits):
     return united_hits
 
 
-def _complement_hit(hit):
+def complement_hit(hit):
     query_name = hit.query_name[:-1]
     query_name += ["+", "-"][hit.query_name.endswith("+")]
     query_start = hit.query_len - hit.query_end

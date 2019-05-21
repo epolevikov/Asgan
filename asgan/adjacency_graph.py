@@ -49,3 +49,20 @@ def build_adjacency_graph(assembly_graph, synteny_blocks):
 
     nx.set_node_attributes(adjacency_graph, distances_between_blocks)
     return adjacency_graph
+
+
+def build_contracted_adjacency_graph(adjacency_graph):
+    contracted_adjacency_graph = nx.MultiDiGraph()
+
+    for (node, data) in adjacency_graph.nodes(data=True):
+        contracted_adjacency_graph.add_node(node, **data)
+
+    for (node_from, node_to, data) in adjacency_graph.edges(data=True):
+        if data["name"].startswith("+") or data["name"].startswith("-"):
+            continue
+
+        contracted_adjacency_graph.add_edge(node_from, node_to,
+                                            name=data["name"],
+                                            weight=data["length"])
+
+    return contracted_adjacency_graph

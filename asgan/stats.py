@@ -85,8 +85,8 @@ def calc_stats(assembly_graph_query, synteny_blocks_query, path_sequences_query,
     stats["paths_total_length_target"] = paths_total_length_target
 
     # link types:
-    link_types = calc_link_types(synteny_paths, synteny_blocks_query, synteny_blocks_target)
-    stats["link_types"] = link_types
+    # link_types = calc_link_types(synteny_paths, synteny_blocks_query, synteny_blocks_target)
+    # stats["link_types"] = link_types
 
     # united components:
     stats["number_united_components"] = number_united_components
@@ -311,6 +311,7 @@ def calc_nx(lengths, total_length=None, rate=0.5):
     return nx, lx
 
 
+'''
 def calc_link_types(synteny_paths, synteny_blocks_query, synteny_blocks_target):
     def get_link_type(block_from, block_to, id2block_query, id2block_target):
         link_types = [[0, 2], [1, 3]]
@@ -339,13 +340,4 @@ def calc_link_types(synteny_paths, synteny_blocks_query, synteny_blocks_target):
                 link_types[link_type] += 1
 
     return link_types
-
-
-def build_id2block_dict(synteny_blocks):
-    id2block = dict()
-
-    for blocks in synteny_blocks.values():
-        for block in blocks:
-            id2block[block.signed_id()] = block
-
-    return id2block
+'''

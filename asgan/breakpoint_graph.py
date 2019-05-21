@@ -1,4 +1,6 @@
 import networkx as nx
+from asgan.common import inv_sign, build_block2edge_dict, build_id2block_dict
+from asgan.adjacency_graph import build_contracted_adjacency_graph
 
 
 def build_breakpoint_graph(adjacency_graph_query, synteny_blocks_query,
@@ -73,53 +75,10 @@ def count_number_synteny_blocks(adjacency_graph):
     return number_synteny_blocks // 2
 
 
-def build_block2edge_dict(adjacency_graph):
-    block2edge = dict()
-
-    for (node_from, node_to, data) in adjacency_graph.edges(data=True):
-        edge_name = data["name"]
-
-        if edge_name.startswith("+") or edge_name.startswith("-"):
-            block2edge[edge_name] = (node_from, node_to)
-
-    return block2edge
-
-
-def build_id2block_dict(synteny_blocks):
-    id2block = dict()
-
-    for blocks in synteny_blocks.values():
-        for block in blocks:
-            id2block[block.signed_id()] = block
-
-    return id2block
-
-
-def build_contracted_adjacency_graph(adjacency_graph):
-    contracted_adjacency_graph = nx.MultiDiGraph()
-
-    for (node, data) in adjacency_graph.nodes(data=True):
-        contracted_adjacency_graph.add_node(node, **data)
-
-    for (node_from, node_to, data) in adjacency_graph.edges(data=True):
-        if data["name"].startswith("+") or data["name"].startswith("-"):
-            continue
-
-        contracted_adjacency_graph.add_edge(node_from, node_to,
-                                            name=data["name"],
-                                            weight=data["length"])
-
-    return contracted_adjacency_graph
-
-
 def make_signed_blocks(id_from, id_to, sign_from, sign_to):
     signed_id_from = "{}{}".format(sign_from, id_from)
     signed_id_to = "{}{}".format(sign_to, id_to)
     return signed_id_from, signed_id_to
-
-
-def inv_sign(sign):
-    return ["+", "-"][sign == "+"]
 
 
 def check_adjacency(id_from, id_to, contracted_adjacency_graph, block2edge, id2block):

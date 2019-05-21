@@ -1,5 +1,7 @@
 import networkx as nx
 from asgan.synteny_blocks import SequenceBlock
+from asgan.adjacency_graph import build_contracted_adjacency_graph
+from asgan.common import build_id2block_dict, build_block2edge_dict
 
 
 def build_synteny_paths(path_components):
@@ -140,23 +142,6 @@ def build_path_between_blocks(block_from, block_to,
     return path
 
 
-def build_contracted_adjacency_graph(adjacency_graph):
-    contracted_adjacency_graph = nx.MultiDiGraph()
-
-    for (node, data) in adjacency_graph.nodes(data=True):
-        contracted_adjacency_graph.add_node(node, **data)
-
-    for (node_from, node_to, data) in adjacency_graph.edges(data=True):
-        if data["name"].startswith("+") or data["name"].startswith("-"):
-            continue
-
-        contracted_adjacency_graph.add_edge(node_from, node_to,
-                                            name=data["name"],
-                                            weight=data["length"])
-
-    return contracted_adjacency_graph
-
-
 def build_edge2data_dict(contracted_adjacency_graph):
     edge2data_dict = dict()
 
@@ -167,25 +152,3 @@ def build_edge2data_dict(contracted_adjacency_graph):
             edge2data_dict[(node_from, node_to)] = data
 
     return edge2data_dict
-
-
-def build_block2edge_dict(adjacency_graph):
-    block2edge = dict()
-
-    for (node_from, node_to, data) in adjacency_graph.edges(data=True):
-        edge_name = data["name"]
-
-        if edge_name.startswith("+") or edge_name.startswith("-"):
-            block2edge[edge_name] = (node_from, node_to)
-
-    return block2edge
-
-
-def build_id2block_dict(synteny_blocks):
-    id2block = dict()
-
-    for blocks in synteny_blocks.values():
-        for block in blocks:
-            id2block[block.signed_id()] = block
-
-    return id2block
