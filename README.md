@@ -6,8 +6,7 @@ statistics based on the found paths.
 
 # Installation
 ```
-git clone https://github.com/epolevikov/Asgan
-git clone https://github.com/lh3/minimap2 Asgan/lib/minimap2
+git clone --recurse-submodules https://github.com/epolevikov/Asgan
 make -C Asgan/lib/minimap2
 ```
 
