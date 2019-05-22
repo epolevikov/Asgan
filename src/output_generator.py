@@ -1,4 +1,4 @@
-import asgan.fasta_parser as fp
+import src.fasta_parser as fp
 import networkx as nx
 
 

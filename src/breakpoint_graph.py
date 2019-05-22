@@ -1,6 +1,6 @@
 import networkx as nx
-from asgan.common import inv_sign, build_block2edge_dict, build_id2block_dict
-from asgan.adjacency_graph import build_contracted_adjacency_graph
+from src.common import inv_sign, build_block2edge_dict, build_id2block_dict
+from src.adjacency_graph import build_contracted_adjacency_graph
 
 
 def build_breakpoint_graph(adjacency_graph_query, synteny_blocks_query,

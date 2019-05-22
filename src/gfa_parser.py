@@ -1,5 +1,5 @@
 from collections import namedtuple
-from asgan.common import inv_sign
+from src.common import inv_sign
 
 Link = namedtuple("Link", ["from_name", "from_strand", "to_name", "to_strand"])
 Sequence = namedtuple("Sequence", ["name", "length", "seq", "is_repeat"])

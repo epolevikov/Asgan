@@ -1,4 +1,4 @@
-from asgan.output_generator import pretty_number
+from src.output_generator import pretty_number
 
 
 class PafHit:

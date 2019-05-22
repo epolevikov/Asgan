@@ -1,16 +1,16 @@
 import os
 import argparse
 
-import asgan.stats as st
-import asgan.paths as ps
-import asgan.hits as ht
-import asgan.aligner as aligner
-import asgan.assembly_graph as asg
-import asgan.adjacency_graph as adg
-import asgan.synteny_blocks as sb
-import asgan.breakpoint_graph as bpg
-import asgan.gfa_parser as gfa_parser
-import asgan.output_generator as out_gen
+import src.stats as st
+import src.paths as ps
+import src.hits as ht
+import src.aligner as aligner
+import src.assembly_graph as asg
+import src.adjacency_graph as adg
+import src.synteny_blocks as sb
+import src.breakpoint_graph as bpg
+import src.gfa_parser as gfa_parser
+import src.output_generator as out_gen
 
 import networkx as nx
 
@@ -113,7 +113,3 @@ def main():
                                       path_sequences_target, sequences_target,
                                       args.out_dir)
     '''
-
-
-if __name__ == "__main__":
-    main()

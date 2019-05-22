@@ -1,6 +1,6 @@
 # Project description
 Asgan (ASsembly Graphs ANalyzer) is a tool for analysis of assembly graphs.
-Asgan takes two assembly graphs in GFA format as input and finds the minimum set of
+The tool takes two assembly graphs in GFA format as input and finds the minimum set of
 homologous sequences (synteny paths) for the graphs and calculates different
 statistics based on the found paths.
 
@@ -12,9 +12,9 @@ make -C Asgan/lib/minimap2
 
 # Usage
 ```
-python -m asgan \
-    --input-query=test/NCTC9016/graph_flye.gfa \
-    --input-target=test/NCTC9016/graph_canu.gfa \
+python asgan.py \
+    --input-query=test/NCTC9016-Flye.gfa \
+    --input-target=test/NCTC9016-Canu.gfa \
     --out-dir=NCTC9016-Flye-vs-Canu
 ```
 
