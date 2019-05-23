@@ -21,3 +21,7 @@ python asgan.py \
 A file named _synteny_paths.txt_ contains synteny paths for the graphs,
 a file _stats.txt_ contains different statistics based on the found paths.
 Two file with _.gv_ format contain a visualization for the paths.
+
+# WABI Supplementary
+
+https://zenodo.org/record/3198701
