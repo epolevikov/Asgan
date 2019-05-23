@@ -13,7 +13,8 @@ make -C Asgan/lib/minimap2
 # Usage
 To run Asgan for the graphs in the _test_ folder, use the following command:
 ```
-python Asgan/asgan.py \
+cd Asgan
+python asgan.py \
     --input-query=test/NCTC9016-Flye.gfa \
     --input-target=test/NCTC9016-Canu.gfa \
     --out-dir=NCTC9016-Flye-vs-Canu
