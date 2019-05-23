@@ -1,5 +1,5 @@
 # Description
-Asgan -- [As]sembly [G]raphs [An]alyzer -- is a tool for analysis of assembly graphs.
+Asgan – [As]sembly [G]raphs [An]alyzer – is a tool for analysis of assembly graphs.
 The tool takes two assembly graphs in the GFA format as input and finds the minimum set of
 homologous sequences (synteny paths) for the graphs and then calculates different statistics
 based on the found paths.
