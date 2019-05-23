@@ -19,9 +19,9 @@ python asgan.py \
     --out-dir=NCTC9016-Flye-vs-Canu
 ```
 After analysis is finished, an output folder will contain:
-    * adjacency_graph_{query, target}.gv – visualization of synteny paths for the graphs.
-    * _synteny_paths.txt_ – synteny paths for the graphs.
-    * _stats.txt_ -- different statistics based on the found synteny paths.
+* adjacency_graph_{query, target}.gv – visualization of synteny paths for the graphs.
+* _synteny_paths.txt_ – synteny paths for the graphs.
+* _stats.txt_ -- different statistics based on the found synteny paths.
 
 # WABI Supplementary
 
