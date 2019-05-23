@@ -26,7 +26,10 @@ After analysis is finished, an output folder will contain:
 
 For the graphs above, synteny paths look like this:
 
-![alt-text-1](https://github.com/epolevikov/Asgan/blob/master/graph-examples/adjacency_graph_query.svg "Flye") ![alt-text-2](https://github.com/epolevikov/Asgan/blob/master/graph-examples/adjacency_graph_target.svg "Canu")
+<p align="center">
+<img src="https://github.com/epolevikov/Asgan/blob/master/graph-examples/flye.svg" width=200>
+<img src="https://github.com/epolevikov/Asgan/blob/master/graph-examples/canu.svg" width=200>
+</p>
 
 # WABI Supplementary
 
