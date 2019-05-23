@@ -26,7 +26,7 @@ After analysis is finished, an output folder will contain:
 For the graphs above, synteny paths look like this:
 
 <p align="center">
-    <img src="https://github.com/epolevikov/Asgan/blob/master/graph-examples/flye-vs-canu.png">
+    <img src="https://github.com/epolevikov/Asgan/blob/master/graph-examples/flye_vs_canu.png">
 </p>
 
 
