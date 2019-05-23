@@ -25,9 +25,16 @@ After analysis is finished, an output folder will contain:
 
 For the graphs above, synteny paths look like this:
 
-<p align="center">
-    <img src="https://github.com/epolevikov/Asgan/blob/master/graph-examples/flye-vs-canu.png">
-</p>
+<table align="center">
+    <tr>
+        <th><img src="https://github.com/epolevikov/Asgan/blob/master/graph-examples/flye.png" width=275></th>
+        <th><img src="https://github.com/epolevikov/Asgan/blob/master/graph-examples/canu.png" width=200></th>
+    </tr>
+    <tr align="center">
+        <td>Flye</td>
+        <td>Canu</td>
+    </tr>
+</table>
 
 # WABI Supplementary
 
