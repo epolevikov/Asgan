@@ -29,6 +29,10 @@ For the graphs above, synteny paths look like this:
     <img src="https://github.com/epolevikov/Asgan/blob/master/graph-examples/flye_vs_canu.png">
 </p>
 
+The graph built by Canu consists of one connected component. Two paths represent forward (-2, -1, -4, +3) and
+reverse complement (-3, +4, +1, +2) strands of a bacterial chromosome. The graph built by Flye also consists of
+one connected component, but two complementary paths are merged through common unresolved repeats. Although the
+structures of the graphs are different, they share one synteny path that corresponds to a bacterial chromosome.
 
 # WABI Supplementary
 
