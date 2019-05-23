@@ -29,16 +29,18 @@ For the graphs above, synteny paths look like this:
 :---: | :---:
 *Flye* | *Canu*
 
-<table align="center">
-    <tr>
-        <th>Firstname</th>
-        <th>Lastname</th>
-    </tr>
-    <tr>
-        <td>Jill</td>
-        <td>Smith</td>
-    </tr>
-</table>
+<div align="center">
+    <table align="center">
+        <tr>
+            <th>Firstname</th>
+            <th>Lastname</th>
+        </tr>
+        <tr>
+            <td>Jill</td>
+            <td>Smith</td>
+        </tr>
+    </table>
+</div>
 
 # WABI Supplementary
 
