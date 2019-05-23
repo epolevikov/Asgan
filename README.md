@@ -28,10 +28,10 @@ For the graphs above, synteny paths look like this:
 <table align="center">
     <tr>
         <th><img src="https://github.com/epolevikov/Asgan/blob/master/graph-examples/flye.png" width=250></th>
-        <th>Flye</th>
+        <th><img src="https://github.com/epolevikov/Asgan/blob/master/graph-examples/canu.png" width=175></th>
     </tr>
     <tr>
-        <td><img src="https://github.com/epolevikov/Asgan/blob/master/graph-examples/canu.png" width=175></td>
+        <td>Flye</td>
         <td>Canu</td>
     </tr>
 </table>
