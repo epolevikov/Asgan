@@ -11,15 +11,17 @@ make -C Asgan/lib/minimap2
 ```
 
 # Usage
+To run Asgan for the graphs in the _test_ folder, use the following command:
 ```
-python asgan.py --input-query=test/NCTC9016-Flye.gfa \
-                --input-target=test/NCTC9016-Canu.gfa \
-                --out-dir=NCTC9016-Flye-vs-Canu
+python asgan.py \
+    --input-query=test/NCTC9016-Flye.gfa \
+    --input-target=test/NCTC9016-Canu.gfa \
+    --out-dir=NCTC9016-Flye-vs-Canu
 ```
-
-A file named _synteny_paths.txt_ contains synteny paths for the graphs,
-a file _stats.txt_ contains different statistics based on the found paths.
-Two file with _.gv_ format contain a visualization for the paths.
+After analysis is finished, an output folder will contain:
+    * adjacency_graph_{query, target}.gv – visualization of synteny paths for the graphs.
+    * _synteny_paths.txt_ – synteny paths for the graphs.
+    * _stats.txt_ -- different statistics based on the found synteny paths.
 
 # WABI Supplementary
 
