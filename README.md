@@ -14,7 +14,10 @@ make -C Asgan/lib/minimap2
 To run Asgan for the graphs in the _test_ folder, use the following command:
 ```
 cd Asgan
-python asgan.py --input-query=test/NCTC9016-Flye.gfa --input-target=test/NCTC9016-Canu.gfa --out-dir=NCTC9016-Flye-vs-Canu
+python asgan.py \
+    --input-query=test/NCTC9016-Flye.gfa \
+    --input-target=test/NCTC9016-Canu.gfa \
+    --out-dir=NCTC9016-Flye-vs-Canu
 ```
 After analysis is finished, an output folder will contain:
 * adjacency_graph_{query, target}.gv – visualization of synteny paths for the graphs.
