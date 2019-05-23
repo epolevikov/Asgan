@@ -12,10 +12,9 @@ make -C Asgan/lib/minimap2
 
 # Usage
 ```
-python asgan.py \
-    --input-query=test/NCTC9016-Flye.gfa \
-    --input-target=test/NCTC9016-Canu.gfa \
-    --out-dir=NCTC9016-Flye-vs-Canu
+python asgan.py --input-query=test/NCTC9016-Flye.gfa \
+                --input-target=test/NCTC9016-Canu.gfa \
+                --out-dir=NCTC9016-Flye-vs-Canu
 ```
 
 A file named _synteny_paths.txt_ contains synteny paths for the graphs,
