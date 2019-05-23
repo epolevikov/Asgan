@@ -13,8 +13,7 @@ make -C Asgan/lib/minimap2
 # Usage
 To run Asgan for the graphs in the _test_ folder, use the following command:
 ```
-cd Asgan
-python asgan.py \
+python Asgan/asgan.py \
     --input-query=test/NCTC9016-Flye.gfa \
     --input-target=test/NCTC9016-Canu.gfa \
     --out-dir=NCTC9016-Flye-vs-Canu
@@ -26,9 +25,11 @@ After analysis is finished, an output folder will contain:
 
 For the graphs above, synteny paths look like this:
 
+<center>
 <img src="https://github.com/epolevikov/Asgan/blob/master/graph-examples/flye.png" width=250> | <img src="https://github.com/epolevikov/Asgan/blob/master/graph-examples/canu.png" width=175>
 :---: | :---:
 *Flye* | *Canu*
+<\center>
 
 # WABI Supplementary
 
