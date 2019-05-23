@@ -26,8 +26,9 @@ After analysis is finished, an output folder will contain:
 
 For the graphs above, synteny paths look like this:
 
-| <img src="https://github.com/epolevikov/Asgan/blob/master/graph-examples/flye.svg" width=250> | <img src="https://github.com/epolevikov/Asgan/blob/master/graph-examples/canu.svg" width=175> |
-| *Flye* | *Canu* |
+<img src="https://github.com/epolevikov/Asgan/blob/master/graph-examples/flye.svg" width=250> | <img src="https://github.com/epolevikov/Asgan/blob/master/graph-examples/canu.svg" width=175>
+--- | ---
+*Flye* | *Canu*
 
 # WABI Supplementary
 
