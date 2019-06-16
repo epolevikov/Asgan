@@ -65,7 +65,7 @@ def group_by_sequence(synteny_blocks):
 
 
 def set_block_attributes(paths):
-    colors = ["green", "lightblue", "gold", "red", "purple", "darkorange",
+    colors = ["blue", "green", "gold", "red", "purple", "darkorange",
               "hotpink", "khaki", "lightblue", "thistle", "tan"]
     block_colors = dict()
     block_styles = dict()

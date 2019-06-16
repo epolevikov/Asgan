@@ -44,7 +44,7 @@ def main():
                                                     out_file="sequences_target.fasta")
 
     print("Aligning sequences..")
-    raw_hits = aligner.align(sequences_query, sequences_target)
+    raw_hits = aligner.align(sequences_query, sequences_target, args.out_dir)
     filtered_hits = ht.filter_repeats(raw_hits, repeats_query, repeats_target)
     processed_hits = ht.process_raw_hits(filtered_hits)
 
