@@ -35,6 +35,11 @@ reverse complement (-3, +4, +1, +2) strands of a bacterial chromosome. The graph
 one connected component, but two complementary paths are merged through common unresolved repeats. Although the
 structures of the graphs are different, they share one synteny path that corresponds to a bacterial chromosome.
 
+Note that to find an alignment between two assemblies, _Asgan_ utilizes _minimap2_. By default, _minimap2_ is
+used with the _asm10_ preset. In the case if two species diverge much (sequence divergence >10%), _minimap2_
+will not find any alignments between them. If your datasets diverge much, use either _map-pb_ or _map-ont_ preset
+using _--minimap-preset_ argument.
+
 # WABI Supplementary
 
 https://zenodo.org/record/3198701
