@@ -46,10 +46,10 @@ class RawPafHit:
         return "{}\t{}\t{}".format(query_info, self.strand, target_info)
 
 
-def align(sequences_query, sequences_target, work_dir):
-    out_file = work_dir + "/minimap.paf"
+def align(sequences_query, sequences_target, args):
+    out_file = args.out_dir + "/minimap.paf"
 
-    run_minimap(sequences_query, sequences_target, out_file)
+    run_minimap(sequences_query, sequences_target, out_file, args)
 
     with open(out_file) as f:
         raw_hits = [RawPafHit(raw_hit) for raw_hit in f]
@@ -58,13 +58,13 @@ def align(sequences_query, sequences_target, work_dir):
     return raw_hits
 
 
-def run_minimap(sequences_query, sequences_target, out_file):
+def run_minimap(sequences_query, sequences_target, out_file, args):
     asgan_root = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
     MINIMAP_BIN = os.path.join(asgan_root, "lib/minimap2/minimap2")
 
     cmd = [MINIMAP_BIN]
     cmd.extend(["--secondary=no"])
-    cmd.extend(["-cx", "asm10"])
+    cmd.extend(["-cx", args.minimap_preset])
     cmd.extend([sequences_target, sequences_query])
     cmd.extend([">", out_file])
     cmd.extend(["2> /dev/null"])

@@ -3,3 +3,4 @@ src/__pycache__
 NCTC_output/
 run_nctc.py
 *.o
+*.pyc

@@ -20,6 +20,7 @@ def parse_args():
     parser.add_argument("--input-query")
     parser.add_argument("--input-target")
     parser.add_argument("--out-dir")
+    parser.add_argument("--minimap-preset", default="asm10")
     return parser.parse_args()
 
 
@@ -44,7 +45,7 @@ def main():
                                                     out_file="sequences_target.fasta")
 
     print("Aligning sequences..")
-    raw_hits = aligner.align(sequences_query, sequences_target, args.out_dir)
+    raw_hits = aligner.align(sequences_query, sequences_target, args)
     filtered_hits = ht.filter_repeats(raw_hits, repeats_query, repeats_target)
     processed_hits = ht.process_raw_hits(filtered_hits)
 
