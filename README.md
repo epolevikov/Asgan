@@ -17,21 +17,21 @@ cd Asgan
 python asgan.py \
     --input-query=test/flye-nctc9016.gfa \
     --input-target=test/canu-nctc9016.gfa \
-    --out-dir=flye-vs-canu-nctc9016
+    --out-dir=flye-vs-canu
 ```
 After analysis is finished, the output directory will contain:
-* adjacency_graph_{query, target}.gv – a visualization of synteny paths for the graphs in the .gv format.
-* _synteny_paths.txt_ – synteny paths for the graphs in the format of alignment.
+* adjacency_graph_{query, target}.gv – a visualization of synteny paths for the graphs.
+* _synteny_paths.txt_ – synteny paths in the .txt format.
 * _stats.txt_ – various statistics based on the found synteny paths.
 
-A visualization of the synteny paths for the graphs looks like this:
+A visualization of the synteny paths looks like this:
 
 <p align="center">
     <img src="https://github.com/epolevikov/Asgan/blob/master/example.png">
 </p>
 
-The graph built by Canu consists of one connected component. Two paths represent forward (-2, -1, -4, +3) and
-reverse complement (-3, +4, +1, +2) strands of a bacterial chromosome. The graph built by Flye also consists of
+The graph built by Canu consists of one connected component. Two paths represent forward (+1, +2, +3, +4) and
+reverse complement (-4, -3, -2, -1) strands of a bacterial chromosome. The graph built by Flye also consists of
 one connected component, but two complementary paths are merged through common unresolved repeats. Although the
 structures of the graphs are different, they share one synteny path that corresponds to a bacterial chromosome.
 
