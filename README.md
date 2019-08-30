@@ -24,7 +24,7 @@ After analysis is finished, the output directory will contain:
 * _synteny_paths.txt_ – synteny paths in the .txt format.
 * _stats.txt_ – various statistics based on the found synteny paths.
 
-A visualization of the synteny paths looks like this:
+Here is how the visualization looks like:
 
 <p align="center">
     <img src="https://github.com/epolevikov/Asgan/blob/master/example.png">
@@ -35,8 +35,13 @@ reverse complement (-4, -3, -2, -1) strands of a bacterial chromosome. The graph
 one connected component, but two complementary paths are merged through common unresolved repeats. Although the
 structures of the graphs are different, they share one synteny path that corresponds to a bacterial chromosome.
 
-Note that to find an alignment between two assemblies, _Asgan_ utilizes _minimap2_. By default, _minimap2_ is
-used with the _asm10_ preset. In the case if two species diverge much (sequence divergence >10%), _minimap2_
+Description of _synteny_paths.txt_ [TBA]
+Description of _stats.txt_ [TBA]
+
+# Tuning alignment parameters
+
+To find an alignment between two assemblies, _Asgan_ utilizes _minimap2_. By default, _minimap2_ is
+used with the _asm10_ preset. If two species diverge much (sequence divergence >10%), _minimap2_
 will not find any alignments between them. If your datasets diverge much, use either _map-pb_ or _map-ont_ preset
 using _--minimap-preset_ argument.
 
