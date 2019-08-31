@@ -35,7 +35,17 @@ reverse complement (-4, -3, -2, -1) strands of a bacterial chromosome. The graph
 one connected component, but two complementary paths are merged through common unresolved repeats. Although the
 structures of the graphs are different, they share one synteny path that corresponds to a bacterial chromosome.
 
-Description of _synteny_paths.txt_ [TBA]
+The content of a file named _synteny_paths.txt_ is the following:
+```
++1      contig_8+       5'078'954       56'910          389'537         contig_2-       425'024         47'878          378'220     
+        contig_8+       5'078'954       389'537         451'517         contig_7+       16'794          0               16'794      
++2      contig_8+       5'078'954       451'517         662'367         contig_6+       209'014         0               209'014     
+        contig_8+       5'078'954       662'367         682'556         contig_7-       16'794          0               16'794      
++3      contig_8+       5'078'954       682'556         3'667'386       contig_1+       2'964'866       11              2'964'858   
+        contig_8+       5'078'954       3'667'386       3'691'634       contig_5-       24'049          0               24'049      
++4      contig_8+       5'078'954       3'691'634       5'064'579       contig_3+       1'364'661       0               1'364'661
+```
+[...]
 Description of _stats.txt_ [TBA]
 
 # Tuning alignment parameters
