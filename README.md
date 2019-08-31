@@ -46,7 +46,31 @@ The content of a file named _synteny_paths.txt_ is the following:
 +4      contig_8+       5'078'954       3'691'634       5'064'579       contig_3+       1'364'661       0               1'364'661
 ```
 [...]
-Description of _stats.txt_ [TBA]
+
+A file named _stats.txt_ looks like this:
+```
+Query           Target
+cc      1               1           
+useqs   1               4           
+
+seqs    1               6           
+tlen    5'078'954       5'004'408   
+N50     5'078'954       2'964'866   
+L50     1               1           
+
+blocks  4               4           
+tlen    4'901'252       4'868'864   
+bcvg    0.965           0.973       
+N50     2'984'830       2'964'847   
+L50     1               1           
+
+paths   1               1           
+tlen    5'007'669       4'926'501   
+N50     5'007'669       4'926'501   
+L50     1               1
+```
+
+[...]
 
 # Tuning alignment parameters
 
