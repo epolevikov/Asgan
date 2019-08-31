@@ -49,7 +49,7 @@ The content of a file named _synteny_paths.txt_ is the following:
 
 A file named _stats.txt_ looks like this:
 ```
-Query           Target
+        Query           Target
 cc      1               1           
 useqs   1               4           
 
