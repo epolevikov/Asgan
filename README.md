@@ -49,7 +49,7 @@ datasets, the file looks like this:
 The first column contains the titles of alignment blocks. The second column corresponds to the names of the sequences of
 the query assembly. The following three columns show the length of a sequence, the starting and the ending positions of
 an alignment block accordingly. The remaining columns correspond to the sequences, lengths, and mapping positions of
-alignment blocks for the target assembly.
+an alignment block for the target assembly.
 
 A file named _stats.txt_ looks like this:
 ```
@@ -86,7 +86,7 @@ the total number of sequences and the number of sequences that represent repeats
 * __bcvg__ – blocks coverage. Calculated as the blocks total length divided by the sequences total length.
 * __paths__ – the number of synteny paths shared between the assemblies.
 
-Each of the three blocks (seqs, blocks, paths) contains the statistics named _tlen_ (total length), _N50_, _L50_ that
+Each of the three groups (seqs, blocks, paths) contains the statistics named _tlen_ (total length), _N50_, _L50_ that
 can be used to estimate the contiguity of the corresponding sequences.
 
 # Tuning alignment parameters
