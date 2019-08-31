@@ -79,7 +79,7 @@ of these statistics for the _Query_ and the _Target_ assemblies accordingly. Her
 * __cc__ – the number of connected components in an assembly graph. Note that even if two complementary strands are
 separated from each other, they are assumed to represent one component. Thus, although the graph built by Canu consists
 of two separated strands, the number of connected components is equal to 1.
-* __useqs__ – the number of unique sequences for in an assembly graph. This number is calculated as the different between
+* __useqs__ – the number of unique sequences in an assembly graph. This number is calculated as the difference between
 the total number of sequences and the number of sequences that represent repeats.
 * __seqs__ – the total number of sequences in an assembly.
 * __blocks__ – the total number of alignment blocks between two assemblies.
