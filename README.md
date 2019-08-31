@@ -20,9 +20,9 @@ python asgan.py \
     --out-dir=flye-vs-canu
 ```
 After analysis is finished, the output directory will contain:
-* __adjacency_graph_{query, target}.gv__ – a visualization of synteny paths.
-* __synteny_paths.txt__ – synteny paths in the format of an alignment.
-* __stats.txt__ – various statistics based on the found synteny paths.
+* <strong>adjacency_graph_{query, target}.gv</strong> – a visualization of synteny paths.
+* <strong>synteny_paths.txt</strong> – synteny paths in the format of an alignment.
+* <strong>stats.txt</strong> – various statistics based on the found synteny paths.
 
 Here is how the visualization looks like:
 
