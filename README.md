@@ -35,7 +35,8 @@ reverse complement (-4, -3, -2, -1) strands of a bacterial chromosome. The graph
 one connected component, but two complementary paths are merged through common unresolved repeats. Although the
 structures of the graphs are different, they share one synteny path that corresponds to a bacterial chromosome.
 
-The content of a file named _synteny_paths.txt_ is the following:
+A file named _synteny_paths.txt_ contains the constructed synteny paths in the format of an alignment. For the above
+datasets, it looks like this:
 ```
 +1      contig_8+       5'078'954       56'910          389'537         contig_2-       425'024         47'878          378'220     
         contig_8+       5'078'954       389'537         451'517         contig_7+       16'794          0               16'794      
@@ -45,7 +46,10 @@ The content of a file named _synteny_paths.txt_ is the following:
         contig_8+       5'078'954       3'667'386       3'691'634       contig_5-       24'049          0               24'049      
 +4      contig_8+       5'078'954       3'691'634       5'064'579       contig_3+       1'364'661       0               1'364'661
 ```
-[...]
+The first column contains the titles of alignment blocks. The second column corresponds to the names of sequences of
+a query assembly to which the alignments blocks were mapped. The following three columns shows the length of a sequence,
+the starting and the ending positions accordingly. The remaining columns correspond to the sequences, lengths, and
+mapping positions for the target assembly.
 
 A file named _stats.txt_ looks like this:
 ```
@@ -70,7 +74,7 @@ N50     5'007'669       4'926'501
 L50     1               1
 ```
 
-[...]
+Description : TBA
 
 # Tuning alignment parameters
 
