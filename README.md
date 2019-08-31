@@ -76,15 +76,15 @@ L50     1               1
 There are three columns: the first one contains the titles of various statistics, the remaining two show the values
 of these statistics for the _Query_ and the _Target_ assemblies accordingly. Here is the description of the statistics:
 
-* cc -- the number of connected components in an assembly graph. Note that even if two complementary strands are
+* __cc__ – the number of connected components in an assembly graph. Note that even if two complementary strands are
 separated from each other, they are assumed to represent one component. Thus, although the graph built by Canu consists
 of two separated strands, the number of connected components is equal to 1.
-* useqs -- the number of unique sequences for in an assembly graph. This number is calculated as the different between
+* __useqs__ – the number of unique sequences for in an assembly graph. This number is calculated as the different between
 the total number of sequences and the number of sequences that represent repeats.
-* seqs -- the total number of sequences in an assembly.
-* blocks -- the total number of alignment blocks between two assemblies.
-* bcvg -- blocks coverage. Calculated as the blocks total length divided by the sequences total length.
-* paths -- the number of synteny paths shared between the assemblies.
+* __seqs__ – the total number of sequences in an assembly.
+* __blocks__ – the total number of alignment blocks between two assemblies.
+* __bcvg__ – blocks coverage. Calculated as the blocks total length divided by the sequences total length.
+* __paths__ – the number of synteny paths shared between the assemblies.
 
 Each of the three blocks contains the statistics named _tlen_ (total length), _N50_, _L50_ that can be used to estimate
 the contiguity of the corresponding sequences.
