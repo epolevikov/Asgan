@@ -1,7 +1,7 @@
 Asgan – [As]sembly [G]raphs [An]alyzer – is a tool for analysis of assembly graphs.
-The tool takes two assembly graphs in the GFA format as input and finds the minimum set
+The tool takes two assembly graphs in the _GFA_ format as input and finds the minimum set
 of homologous sequences (synteny paths) shared between the graphs. As output, Asgan
-produces various statistics and a visualization of the found paths in the .gv format.
+produces various statistics and a visualization of the found paths in the _gv_ format.
 
 # Installation
 ```
@@ -11,7 +11,7 @@ make -C Asgan/lib/minimap2
 
 # Usage example
 The _test_ folder contains two bacterial assembly from the NCTC collections produced by Flye
-and Canu assemblers. To run Asgan for these assemblies, use the following command:
+and Canu assemblers. To run Asgan for these datasets, use the following command:
 ```
 cd Asgan
 python asgan.py \
@@ -20,9 +20,9 @@ python asgan.py \
     --out-dir=flye-vs-canu
 ```
 After analysis is finished, the output directory will contain:
-* adjacency_graph_{query, target}.gv – a visualization of synteny paths for the graphs.
-* _synteny_paths.txt_ – synteny paths in the .txt format.
-* _stats.txt_ – various statistics based on the found synteny paths.
+* __adjacency_graph_{query, target}.gv__ – a visualization of synteny paths.
+* __synteny_paths.txt__ – synteny paths in the format of an alignment.
+* __stats.txt__ – various statistics based on the found synteny paths.
 
 Here is how the visualization looks like:
 
@@ -30,13 +30,13 @@ Here is how the visualization looks like:
     <img src="https://github.com/epolevikov/Asgan/blob/master/example.png">
 </p>
 
-The graph built by Canu consists of one connected component. Two paths represent forward (+1, +2, +3, +4) and
-reverse complement (-4, -3, -2, -1) strands of a bacterial chromosome. The graph built by Flye also consists of
-one connected component, but two complementary paths are merged through common unresolved repeats. Although the
-structures of the graphs are different, they share one synteny path that corresponds to a bacterial chromosome.
+The graph built by Canu consists of two separated sequences. One of them represents a forward (+1, +2, +3, +4) strand,
+the other corresponds to a reverse complement (-4, -3, -2, -1) strand of a bacterial chromosome. The graph built by Flye
+consists of one connected component, where two complementary strands are merged through common unresolved repeats.
+Although the structures of the graphs are different, they share one synteny path that corresponds to a bacterial chromosome.
 
-A file named _synteny_paths.txt_ contains the constructed synteny paths in the format of an alignment. For the above
-datasets, it looks like this:
+A file named _synteny_paths.txt_ contains the found synteny paths in the format of an alignment. For the above
+datasets, the file looks like this:
 ```
 +1      contig_8+       5'078'954       56'910          389'537         contig_2-       425'024         47'878          378'220     
         contig_8+       5'078'954       389'537         451'517         contig_7+       16'794          0               16'794      
@@ -46,10 +46,10 @@ datasets, it looks like this:
         contig_8+       5'078'954       3'667'386       3'691'634       contig_5-       24'049          0               24'049      
 +4      contig_8+       5'078'954       3'691'634       5'064'579       contig_3+       1'364'661       0               1'364'661
 ```
-The first column contains the titles of alignment blocks. The second column corresponds to the names of sequences of
-a query assembly to which the alignments blocks were mapped. The following three columns shows the length of a sequence,
-the starting and the ending positions accordingly. The remaining columns correspond to the sequences, lengths, and
-mapping positions for the target assembly.
+The first column contains the titles of alignment blocks. The second column corresponds to the names of the sequences of
+the query assembly. The following three columns show the length of a sequence, the starting and the ending positions of
+an alignment block accordingly. The remaining columns correspond to the sequences, lengths, and mapping positions of
+alignment blocks for the target assembly.
 
 A file named _stats.txt_ looks like this:
 ```
@@ -86,8 +86,8 @@ the total number of sequences and the number of sequences that represent repeats
 * __bcvg__ – blocks coverage. Calculated as the blocks total length divided by the sequences total length.
 * __paths__ – the number of synteny paths shared between the assemblies.
 
-Each of the three blocks contains the statistics named _tlen_ (total length), _N50_, _L50_ that can be used to estimate
-the contiguity of the corresponding sequences.
+Each of the three blocks (seqs, blocks, paths) contains the statistics named _tlen_ (total length), _N50_, _L50_ that
+can be used to estimate the contiguity of the corresponding sequences.
 
 # Tuning alignment parameters
 
