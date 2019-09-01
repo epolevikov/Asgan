@@ -1,7 +1,7 @@
 Asgan – <strong>As</strong>sembly <strong>G</strong>raphs <strong>An</strong>alyzer – is a tool for analysis of
 assembly graphs. The tool takes two assembly graphs in the _GFA_ format as input and finds the minimum set
 of homologous sequences (synteny paths) shared between the graphs. As output, Asgan produces various statistics and
-a visualization of the found paths in the _gv_ format.
+a visualization of the found paths.
 
 # Installation
 ```
@@ -26,7 +26,7 @@ After analysis is finished, the output directory will contain the following file
 
 ## Visualization
 
-Here is how the visualization looks like:
+Here is how the visualization for the test dataset looks like:
 
 <p align="center">
     <img src="https://github.com/epolevikov/Asgan/blob/master/example.png">
@@ -39,8 +39,8 @@ Although the structures of the graphs are different, they share one synteny path
 
 ## Synteny paths
 
-A file named _synteny_paths.txt_ contains the found synteny paths in the format of an alignment. For the above
-datasets, the file looks like this:
+A file named _synteny_paths.txt_ contains the found synteny paths in the format of an alignment. For the test
+dataset, the file looks like this:
 ```
 +1      contig_8+       5'078'954       56'910          389'537         contig_2-       425'024         47'878          378'220     
         contig_8+       5'078'954       389'537         451'517         contig_7+       16'794          0               16'794      
@@ -52,9 +52,9 @@ datasets, the file looks like this:
 ```
 The first column contains the names of the alignment blocks. The rows with ids (+1, +2, +3, +4) correspond to the
 unique alignment blocks, while the rows with the empty block title represent repeats. The second column corresponds
-to the sequences of the query assembly. The following three columns show the length of a sequence, the starting and
-the ending position of an alignment block accordingly. The remaining columns correspond to the sequences, lengths,
-and mapping positions of the alignment blocks for the target assembly.
+to the sequences of the query assembly to which the alignment blocks were mapped. The following three columns show
+the length of a sequence, the starting and the ending position of an alignment block accordingly. The remaining columns
+correspond to the sequences, lengths, and mapping positions for the alignment blocks of the target assembly.
 
 ## Statistics
 
@@ -103,8 +103,7 @@ with at least one alignment block are counted.
 by merging the alignment blocks that appear in the same order both in the query and in the target graph. See the
 manuscript [TBA] if you are interested in a more detailed description of the algorithm.
 
-Important that for the last four statistics, two complementary sequences (contig_1+ and contig_1- for example)
-are counted as one.
+Important that two complement sequences (blocks, paths) are counted as one.
 
 Each of the last three groups (__seqs__, __blocks__, __paths__) contains statistics named __tlen__ (total length),
 __N50__, __L50__ that can be used to estimate the contiguity of the corresponding sequences. The __blocks__ group also
@@ -123,7 +122,7 @@ into several parts belonging to different connected components.
 
 If you have a reference genome available, you may use Asgan to estimate how far or close your assembly graph from the
 ideal one. To do that, run Asgan using the assembly graph as _Query_ and the reference as _Target_. The difference
-between the number of chromosomes and the number of synteny paths will reveal the quality of the assembly graph.
+between the number of synteny paths and the number of chromosomes will reveal the quality of the assembly graph.
 
 Below you can see the results of such an analysis for the assembly graph built by Flye for the C.elegans dataset. First,
 let's have a look at the statistics:
@@ -154,7 +153,7 @@ chromosomes are merged through them in one component. The number of common align
 and the reference is 80, while the number of synteny paths is 16. This means, on the one hand, that most of the
 alignment blocks appear in the assembly graph in the same order as in the reference indicating the correct structure of
 the graph. On the other hand, sixteen is greater than 6 (the expected number of common paths), which indicates that the
-graph contains some defects.
+graph contains defects.
 
 We don't provide a visualization for the assembly graph here since its structure is complicated and it is hard to draw
 any conclusions just looking at it. Instead, it might be useful to see how the synteny paths traverse the reference
@@ -178,17 +177,13 @@ order in two different assembly graphs, these blocks are likely to appear in the
 In other words, a collection of synteny paths for two fragmented assembly graphs might represent more contiguous
 sequences comparing with the initial sequences for each of the graphs.
 
-We didn't performed thorough experiments based on this idea and it is likely that for real datasets one may encounter
-some pitfalls. This, probably, might be a direction for the further research.
-
-Link to the manuscript: TBA.
+We didn't perform thorough experiments based on this idea and it is likely that for real datasets one may encounter
+some pitfalls. This, probably, might be a direction for further research.
 
 ## Comparing assemblies of different species
 
 Asgan can be used to compare assemblies of different species. We showed that the N50 metric for synteny paths correlates
-with the genomic distance between species. See the manuscript for details.
-
-Link to the manuscript: TBA.
+with the genomic distance between species. See the manuscript for details [TBA].
 
 # Tuning alignment parameters
 
