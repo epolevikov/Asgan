@@ -169,6 +169,27 @@ chromosome is covered by one path (shown in blue), which is the ideal case expec
 remaining ones, however, are covered by two or more paths indicating that some parts of the graphs have defects. The
 nodes incident to edges with different colors correspond to the defective parts of the assembly graph.
 
+## Comparing two assembly graphs built by different assemblers
+
+Assume that we applied Asgan for two fragmented bacterial assembly and got one synteny path for them. Thus,
+having two fragmented assembly, we obtained a complete one using synteny paths decomposition. At this point,
+one possible application of synteny paths is improving assembly quality. If two alignment blocks appear in the same
+order in two different assembly graphs, these blocks are likely to appear in the same order in a reference genome.
+In other words, a collection of synteny paths for two fragmented assembly graphs might represent more contiguous
+sequences comparing with the initial sequences for each of the graphs.
+
+We didn't performed thorough experiments based on this idea and it is likely that for real datasets one may encounter
+some pitfalls. This, probably, might be a direction for the further research.
+
+Link to the manuscript: TBA.
+
+## Comparing assemblies of different species
+
+Asgan can be used to compare assemblies of different species. We showed that the N50 metric for synteny paths correlates
+with the genomic distance between species. See the manuscript for details.
+
+Link to the manuscript: TBA.
+
 # Tuning alignment parameters
 
 To find an alignment between two assemblies, Asgan utilizes minimap2. By default, minimap2 is
