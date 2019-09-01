@@ -160,7 +160,14 @@ We don't provide a visualization for the assembly graph here since its structure
 any conclusions just looking at it. Instead, it might be useful to see how the synteny paths traverse the reference
 chromosomes:
 
-[...]
+<p align="center">
+    <img src="https://github.com/epolevikov/Asgan/blob/master/chromosomes.png">
+</p>
+
+Synteny paths shared between the assembly graph a the reference are shown in different colors. You can see that one
+chromosome is covered by one path (shown in blue), which is the ideal case expected for each of the chromosomes. The
+remaining ones, however, are covered by two or more paths indicating that some parts of the graphs have defects. The
+nodes incident to edges with different colors correspond to the defective parts of the assembly graph.
 
 # Tuning alignment parameters
 
