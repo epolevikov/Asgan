@@ -195,7 +195,7 @@ _--minimap-preset_ argument.
 
 # License
 
-Asgan is distributed under the MIT license. See the [https://github.com/epolevikov/Asgan/blob/master/LICENSE.txt](LICENSE) file for details.
+Asgan is distributed under the MIT license. See the [LICENSE](https://github.com/epolevikov/Asgan/blob/master/LICENSE.txt) file for details.
 
 # WABI Supplementary
 
