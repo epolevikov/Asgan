@@ -1,7 +1,7 @@
-Asgan – [As]sembly [G]raphs [An]alyzer – is a tool for analysis of assembly graphs.
-The tool takes two assembly graphs in the _GFA_ format as input and finds the minimum set
-of homologous sequences (synteny paths) shared between the graphs. As output, Asgan
-produces various statistics and a visualization of the found paths in the _gv_ format.
+Asgan – <strong>As</strong>sembly <strong>G</strong>raphs <strong>An</strong>alyzer – is a tool for analysis of
+assembly graphs. The tool takes two assembly graphs in the _GFA_ format as input and finds the minimum set
+of homologous sequences (synteny paths) shared between the graphs. As output, Asgan produces various statistics and
+a visualization of the found paths in the _gv_ format.
 
 # Installation
 ```
@@ -10,8 +10,8 @@ make -C Asgan/lib/minimap2
 ```
 
 # Usage example
-The _test_ folder contains two bacterial assembly from the NCTC collections produced by Flye
-and Canu assemblers. Use the command below to run Asgan for these datasets:
+The _test_ folder contains two bacterial assembly from the NCTC collection produced by Flye
+and Canu assemblers. To run Asgan for the datasets, use the command below:
 ```
 cd Asgan
 python asgan.py \
@@ -24,6 +24,8 @@ After analysis is finished, the output directory will contain the following file
 * <strong>synteny_paths.txt</strong> – synteny paths in the format of an alignment.
 * <strong>stats.txt</strong> – various statistics for the graphs.
 
+## Visualization
+
 Here is how the visualization looks like:
 
 <p align="center">
@@ -34,6 +36,8 @@ The graph built by Canu consists of two separated sequences. One of them represe
 the other corresponds to a reverse complement (-4, -3, -2, -1) strand of a bacterial chromosome. The graph built by Flye
 consists of one connected component, where two complementary strands are merged through common unresolved repeats.
 Although the structures of the graphs are different, they share one synteny path that corresponds to a bacterial chromosome.
+
+## Synteny paths
 
 A file named _synteny_paths.txt_ contains the found synteny paths in the format of an alignment. For the above
 datasets, the file looks like this:
@@ -46,10 +50,13 @@ datasets, the file looks like this:
         contig_8+       5'078'954       3'667'386       3'691'634       contig_5-       24'049          0               24'049      
 +4      contig_8+       5'078'954       3'691'634       5'064'579       contig_3+       1'364'661       0               1'364'661
 ```
-The first column contains the names of the alignment blocks. The second column corresponds to the sequences of the
-query assembly. The following three columns show the length of a sequence, the starting and the ending positions of
-an alignment block accordingly. The remaining columns correspond to the sequences, lengths, and mapping positions of
-the alignment blocks for the target assembly.
+The first column contains the names of the alignment blocks. The rows with ids (+1, +2, +3, +4) correspond to the
+unique alignment blocks, while the rows with the empty block title represent repeats. The second column corresponds
+to the sequences of the query assembly. The following three columns show the length of a sequence, the starting and
+the ending position of an alignment block accordingly. The remaining columns correspond to the sequences, lengths,
+and mapping positions of the alignment blocks for the target assembly.
+
+## Statistics
 
 Here is the content of a file named _stats.txt_:
 ```
@@ -99,17 +106,17 @@ manuscript [TBA] if you are interested in a more detailed description of the alg
 Important that for the last four statistics, two complementary sequences (contig_1+ and contig_1- for example)
 are counted as one.
 
-Each of the last three groups (_seqs_, _blocks_, _paths_) contains statistics named _tlen_ (total length), _N50_, _L50_ that
-can be used to estimate the contiguity of the corresponding sequences. The _blocks_ also has a statistics named _bcvg_
-(block coverage). This number is calculated as the total length of alignment blocks divided by the total length of
-sequences.
+Each of the last three groups (__seqs__, __blocks__, __paths__) contains statistics named __tlen__ (total length),
+__N50__, __L50__ that can be used to estimate the contiguity of the corresponding sequences. The __blocks__ group also
+has a statistic named __bcvg__ (block coverage). This number is calculated as the total length of alignment blocks
+divided by the total length of sequences.
 
 # Tuning alignment parameters
 
 To find an alignment between two assemblies, _Asgan_ utilizes _minimap2_. By default, _minimap2_ is
 used with the _asm10_ preset. In some cases, the preset might need to be changed. For example, if two assemblies
 diverge much (sequence diverge > 10%), _minimap2_ will not find alignment blocks between them. For highly diverged
-species, we recommend to use either _map-pb_ or _map_ont_ preset. The default present can changed using the
+species, we recommend to use either _map-pb_ or _map_ont_ preset. The default preset can changed using the
 _--minimap-preset_ argument.
 
 # WABI Supplementary
