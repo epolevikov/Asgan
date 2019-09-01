@@ -111,11 +111,62 @@ __N50__, __L50__ that can be used to estimate the contiguity of the correspondin
 has a statistic named __bcvg__ (block coverage). This number is calculated as the total length of alignment blocks
 divided by the total length of sequences.
 
+# Use cases
+
+## Assessing the quality of an assembly graph
+
+When we run an assembler for a collection of reads, we expect the assembler to reconstruct each chromosome of a genome.
+Thus, if a genome contains _N_ chromosomes, the ideal assembly graph would consist of _N_ connected components each
+representing one chromosome. Due to repeats and errors in reads, assembly graphs often contains defects. For example,
+the parts of different chromosomes might be merged in one connected component. Or, one chromosome might be separated
+into several parts belonging to different connected components.
+
+If you have a reference genome available, you may use Asgan to estimate how far or close your assembly graph from the
+ideal one. To do that, run Asgan using the assembly graph as _Query_ and the reference as _Target_. The difference
+between the number of chromosomes and the number of synteny paths will reveal the quality of the assembly graph.
+
+Below you can see the results of such an analysis for the assembly graph built by Flye for the C.elegans dataset. First,
+let's have a look at the statistics:
+```
+        Query           Target
+cc      2               6           
+useqs   78              6           
+
+seqs    165             6           
+tlen    98'905'858      100'272'607
+N50     1'919'214       17'493'829  
+L50     18              3           
+
+blocks  80              80          
+tlen    96'408'233      97'366'606  
+bcvg    0.975           0.971       
+N50     1'888'725       1'875'295   
+L50     18              18          
+
+paths   16              16          
+tlen    97'713'780      99'613'824  
+N50     8'650'665       8'851'958   
+L50     4               4
+```
+The reference genome (_Target_) consists of six connected components (one for each chromosome), while the assembly
+graph (_Query_) has only two. This tells us that the graph contains unresolved repeats and the parts of several
+chromosomes are merged through them in one component. The number of common alignment blocks between the assembly graph
+and the reference is 80, while the number of synteny paths is 16. This means, on the one hand, that most of the
+alignment blocks appear in the assembly graph in the same order as in the reference indicating the correct structure of
+the graph. On the other hand, sixteen is greater than 6 (the expected number of common paths), which indicates that the
+graph contains some defects.
+
+We don't provide a visualization for the assembly graph here since its structure is complicated and it is hard to draw
+any conclusions just looking at it. Instead, it might be useful to see how the synteny paths traverse the reference
+chromosomes:
+
+[...]
+
 # Tuning alignment parameters
 
-To find an alignment between two assemblies, _Asgan_ utilizes _minimap2_. By default, _minimap2_ is
+To find an alignment between two assemblies, Asgan utilizes minimap2. By default, minimap2 is
 used with the _asm10_ preset. In some cases, the preset might need to be changed. For example, if two assemblies
-diverge much (sequence diverge > 10%), _minimap2_ will not find alignment blocks between them. For highly diverged
+diverge much (sequence diverge > 10%), minimap2 will not find alignment blocks between them. For highly diverged
 species, we recommend to use either _map-pb_ or _map_ont_ preset. The default preset can changed using the
 _--minimap-preset_ argument.
 
