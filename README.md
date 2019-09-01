@@ -193,6 +193,10 @@ diverge much (sequence diverge > 10%), minimap2 will not find alignment blocks b
 species, we recommend to use either _map-pb_ or _map_ont_ preset. The default preset can changed using the
 _--minimap-preset_ argument.
 
+# License
+
+Asgan is distributed under the MIT license. See the [https://github.com/epolevikov/Asgan/blob/master/LICENSE.txt](LICENSE) file for details.
+
 # WABI Supplementary
 
 https://zenodo.org/record/3198701
