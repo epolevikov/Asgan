@@ -100,8 +100,8 @@ description:
 with at least one alignment block are counted.
 * __blocks__ – the total number of alignment blocks between two assembly graphs.
 * __paths__ – the number of synteny paths shared between the assembly graphs. The paths are obtained
-by merging the alignment blocks that appear in the same order both in the query and in the target graph. See the
-manuscript [TBA] if you are interested in a more detailed description of the algorithm.
+by merging the alignment blocks that appear in the same order both in the query and in the target graph. See our
+paper if you are interested in a more detailed description of the algorithm.
 
 Important that two complement sequences (blocks, paths) are counted as one.
 
@@ -177,13 +177,10 @@ order in two different assembly graphs, these blocks are likely to appear in the
 In other words, a collection of synteny paths for two fragmented assembly graphs might represent more contiguous
 sequences comparing with the initial sequences for each of the graphs.
 
-We didn't perform thorough experiments based on this idea and it is likely that for real datasets one may encounter
-some pitfalls. This, probably, might be a direction for further research.
-
 ## Comparing assemblies of different species
 
 Asgan can be used to compare assemblies of different species. We showed that the N50 metric for synteny paths correlates
-with the genomic distance between species. See the manuscript for details [TBA].
+with the genomic distance between species. See the paper for details.
 
 # Tuning alignment parameters
 
@@ -196,6 +193,10 @@ _--minimap-preset_ argument.
 # License
 
 Asgan is distributed under the MIT license. See the [LICENSE](https://github.com/epolevikov/Asgan/blob/master/LICENSE.txt) file for details.
+
+# Publications
+
+Evgeny Polevikov and Mikhail Kolmogorov, "Synteny Paths for Assembly Graphs Comparison", WABI 2019, [https://doi.org/10.4230/LIPIcs.WABI.2019.24](https://doi.org/10.4230/LIPIcs.WABI.2019.24)
 
 # WABI Supplementary
 
