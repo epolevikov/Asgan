@@ -1,7 +1,7 @@
 import networkx as nx
-from src.synteny_blocks import SequenceBlock
-from src.adjacency_graph import build_contracted_adjacency_graph
-from src.common import build_id2block_dict, build_block2edge_dict
+from asgan.synteny_blocks import SequenceBlock
+from asgan.adjacency_graph import build_contracted_adjacency_graph
+from asgan.common import build_id2block_dict, build_block2edge_dict
 
 
 def build_synteny_paths(path_components):

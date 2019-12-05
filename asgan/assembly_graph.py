@@ -1,6 +1,6 @@
 import networkx as nx
-from src.utils import DisjointSet
-from src.gfa_parser import parse_gfa
+from asgan.utils import DisjointSet
+from asgan.gfa_parser import parse_gfa
 
 
 class Sequence:

@@ -1,5 +1,5 @@
 import os
-from src.output_generator import pretty_number
+from asgan.output_generator import pretty_number
 
 
 class RawPafHit:
