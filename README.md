@@ -29,7 +29,7 @@ After analysis is finished, the output directory will contain the following file
 Here is how the visualization for the test dataset looks like:
 
 <p align="center">
-    <img src="https://github.com/epolevikov/Asgan/blob/master/example.png">
+    <img src="https://github.com/epolevikov/Asgan/blob/master/images/example.png">
 </p>
 
 The graph built by Canu consists of two separated sequences. One of them represents a forward (+1, +2, +3, +4) strand,
@@ -160,7 +160,7 @@ any conclusions just looking at it. Instead, it might be useful to see how the s
 chromosomes:
 
 <p align="center">
-    <img src="https://github.com/epolevikov/Asgan/blob/master/chromosomes.png">
+    <img src="https://github.com/epolevikov/Asgan/blob/master/images/chromosomes.png">
 </p>
 
 Synteny paths shared between the assembly graph a the reference are shown in different colors. You can see that one
@@ -186,17 +186,17 @@ with the genomic distance between species. See the paper for details.
 
 To find an alignment between two assemblies, Asgan utilizes minimap2. By default, minimap2 is
 used with the _asm10_ preset. In some cases, the preset might need to be changed. For example, if two assemblies
-diverge much (sequence diverge > 10%), minimap2 will not find alignment blocks between them. For highly diverged
-species, we recommend to use either _map-pb_ or _map_ont_ preset. The default preset can changed using the
+diverge much (sequence divergence > 10%), minimap2 will not find alignment blocks between them. For highly diverged
+species, we recommend to use either _map-pb_ or _map-ont_ preset. The default preset can changed using the
 _--minimap-preset_ argument.
 
 # License
 
 Asgan is distributed under the MIT license. See the [LICENSE](https://github.com/epolevikov/Asgan/blob/master/LICENSE.txt) file for details.
 
-# Publications
+# Publication
 
-Evgeny Polevikov and Mikhail Kolmogorov, "Synteny Paths for Assembly Graphs Comparison", WABI 2019, [https://doi.org/10.4230/LIPIcs.WABI.2019.24](https://doi.org/10.4230/LIPIcs.WABI.2019.24)
+Evgeny Polevikov and Mikhail Kolmogorov, "Synteny Paths for Assembly Graphs Comparison", WABI 2019. [(https://doi.org/10.4230/LIPIcs.WABI.2019.24)](https://doi.org/10.4230/LIPIcs.WABI.2019.24)
 
 # WABI Supplementary
 
