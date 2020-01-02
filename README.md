@@ -196,7 +196,7 @@ Asgan is distributed under the MIT license. See the [LICENSE](https://github.com
 
 # Publication
 
-Evgeny Polevikov and Mikhail Kolmogorov, "Synteny Paths for Assembly Graphs Comparison", WABI 2019. ([https://doi.org/10.4230/LIPIcs.WABI.2019.24)](https://doi.org/10.4230/LIPIcs.WABI.2019.24)
+Evgeny Polevikov and Mikhail Kolmogorov, "Synteny Paths for Assembly Graphs Comparison", WABI 2019. [https://doi.org/10.4230/LIPIcs.WABI.2019.24](https://doi.org/10.4230/LIPIcs.WABI.2019.24)
 
 # WABI Supplementary
 
